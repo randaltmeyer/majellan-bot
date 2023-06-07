@@ -5,10 +5,12 @@
 	{ "label":"Ailments", "jsonUrl":"https://dqt.kusoge.xyz/ailments/q", "file":"/data/ailments/all.json" },
 	{ "label":"Buffs", "jsonUrl":"https://dqt.kusoge.xyz/buffs/q", "file":"/data/buffs/all.json" },
 	{ "label":"Passives", "jsonUrl":"https://dqt.kusoge.xyz/passives/q", "file":"/data/passives/all.json" },
+	{ "label":"Drops", "jsonUrl":"https://dqt.kusoge.xyz/unitdrop/q", "file":"/data/passives/all.json" },
 	
 	{ "label":"Profiles", "jsUrl":"https://dqt.kusoge.xyz/json/profile.js", "file":"/data/profiles/all.js", "key":"profile" },
 	{ "label":"Stages", "jsUrl":"https://dqt.kusoge.xyz/json/stage.js", "file":"/data/stages/all.js", "key":"stage" },
 	{ "label":"Event Groups", "jsUrl":"https://dqt.kusoge.xyz/json/event_group.js", "file":"/data/eventGroups/all.js", "key":"event_group" },
+	{ "label":"Event Portals", "jsUrl":"https://dqt.kusoge.xyz/json/event_portal.js", "file":"/data/eventPortals/all.js", "key":"event_portal" },
 	{ "label":"Item Names", "jsUrl":"https://dqt.kusoge.xyz/json/item_name.js", "file":"/data/itemNames/all.js", "key":"item_name" },
 	{ "label":"Item Descs", "jsUrl":"https://dqt.kusoge.xyz/json/item_desc.js", "file":"/data/itemDescs/all.js", "key":"item_desc" },
 	{ "label":"Passive Names", "jsUrl":"https://dqt.kusoge.xyz/json/passive_name.js", "file":"/data/passiveNames/all.js", "key":"passive_name" },
