@@ -1,24 +1,31 @@
 import { readFileSync } from "fs";
-import { BotInfo, DropInfo, Fetch, Lang, StringStringMap, UnitInfo } from "../types.mjs";
+import { BotInfo, DropInfo, Fetch, InfoBase, Lang, StringStringMap, UnitInfo } from "../types.mjs";
 
-function readJson(type: "bot", file: "dev"): BotInfo | null;
-function readJson(type: "profile", file: Lang): StringStringMap | null;
+function readJson(type: "bots", file: "dev"): BotInfo | null;
+
+function readJson(type: "units/name", file: Lang): StringStringMap | null;
 function readJson(type: "stage", file: Lang): StringStringMap | null;
-function readJson(type: "unit", file: "all"): UnitInfo[] | null;
-function readJson(type: "drop", file: "all"): DropInfo[] | null;
-function readJson(type: "fetch", file: "all"): Fetch[] | null;
+
+function readJson(type: "ailments", file: "all"): InfoBase[] | null;
+function readJson(type: "buffs", file: "all"): InfoBase[] | null;
+function readJson(type: "fetches", file: "all"): Fetch[] | null;
+function readJson(type: "items", file: "all"): InfoBase[] | null;
+function readJson(type: "passives", file: "all"): InfoBase[] | null;
+function readJson(type: "skills", file: "all"): InfoBase[] | null;
+function readJson(type: "unitdrop", file: "all"): DropInfo[] | null;
+function readJson(type: "units", file: "all"): UnitInfo[] | null;
 function readJson<T>(type: string, file: string): T | null {
-	const path = type === "fetch" ? `../data/fetches.json` : `../data/${type}s/${file}.json`;
+	const path = `../data/${type}/${file}.json`;
 	const contents = readFileSync(path, "utf8");
 	try { return JSON.parse(contents); }catch(ex) { console.error(ex); }
 	return null;
 }
 
 export function getBotToken(): string {
-	return readJson("bot", "dev")?.token ?? "";
+	return readJson("bots", "dev")?.token ?? "";
 }
 export function getFetches(): Fetch[] {
-	return readJson("fetch", "all") ?? [];
+	return readJson("fetches", "all") ?? [];
 }
 
 const maps = new Map<Lang, Map<string, string>>();
@@ -30,7 +37,7 @@ const maps = new Map<Lang, Map<string, string>>();
 function getMap(lang: Lang = "en"): Map<string, string> {
 	if (!maps.has(lang)) {
 		const map = new Map();
-		const profile = readJson("profile", lang);
+		const profile = readJson("units/name", lang);
 		if (profile) {
 			Object.keys(profile).forEach(key => map.set(key, profile[key]));
 		}
@@ -65,7 +72,7 @@ export function findByKey(key: string, lang?: Lang) { return findKeyOrValue(key,
 export function findByValue(value: string, lang?: Lang) { return findKeyOrValue("", value, lang); }
 
 export function findUnit(unitKey: string, includeDrops: boolean): UnitInfo | null {
-	const all = readJson("unit", "all") ?? [];
+	const all = readJson("units", "all") ?? [];
 	for (const unit of all) {
 		if (unit.name === unitKey) {
 			if (includeDrops) {
@@ -78,7 +85,7 @@ export function findUnit(unitKey: string, includeDrops: boolean): UnitInfo | nul
 }
 
 export function findDropsByUnit(unitKey: string): DropInfo[] {
-	const all = readJson("drop", "all") ?? [];
+	const all = readJson("unitdrop", "all") ?? [];
 	const drops: DropInfo[] = [];
 	for (const drop of all) {
 		if (drop.unitSplit.includes(unitKey)) {

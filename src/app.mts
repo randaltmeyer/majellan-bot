@@ -1,6 +1,6 @@
 import { ActivityType, Client, EmbedBuilder, IntentsBitField, Interaction, Message, userMention } from "discord.js";
 import { findByKey, findByValue, findUnit, getBotToken } from "./utils/DataUtils.mjs";
-import { UnitInfo, UnitInfoBase } from "./types.mjs";
+import { UnitInfo, InfoBase } from "./types.mjs";
 
 async function handleReady(client: Client): Promise<void> {
 	client.user?.setPresence({
@@ -46,7 +46,7 @@ async function findUnitKey(...terms: string[]): Promise<string | null> {
 	return null;
 }
 
-async function embedUnitBase(base: UnitInfoBase, baseType: string): Promise<EmbedBuilder> {
+async function embedUnitBase(base: InfoBase, baseType: string): Promise<EmbedBuilder> {
 	const embed = new EmbedBuilder();
 	const name = findByKey(base.name) ?? base.name.split(".").pop() ?? `Unknown ${baseType}`;
 	embed.setTitle(baseType === "Unit" ? name : `${baseType}: ${name}`);

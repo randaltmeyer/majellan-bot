@@ -1,0 +1,12 @@
+[
+	{ "label":"Ailments", "listMethod":"POST", "listKey":"ailments", "nameKey":"ailment_name" },
+	{ "label":"Buffs", "listMethod":"POST", "listKey":"buffs", "nameKey":"buff_name" },
+	{ "label":"Drops", "listMethod":"GET", "listKey":"unitdrop" },
+	{ "label":"Event Groups", "listMethod":"JS", "listKey":"event_group" },
+	{ "label":"Event Portals", "listMethod":"JS", "listKey":"event_portal" },
+	{ "label":"Items", "listMethod":"POST", "listKey":"items", "nameKey":"item_name", "descKey":"item_desc" },
+	{ "label":"Passives", "listMethod":"POST", "listKey":"passives", "nameKey":"passive_name", "descKey":"passive_desc" },
+	{ "label":"Skills", "listMethod":"POST", "listKey":"skills", "nameKey":"skill_name" },
+	{ "label":"Stages", "listMethod":"JS", "listKey":"stage" },
+	{ "label":"Units", "listMethod":"POST", "listKey":"units", "nameKey":"profile" }
+]
