@@ -28,9 +28,12 @@ async function main() {
 				writeFileSync(`..${fetch.file}`, js);
 				console.log(`\tparsing langs ...`);
 				for (const lang of LANGS) {
-					const json = js.match(new RegExp(`var ${fetch.key}_${lang} = (\{(?:.|\n)*?\});`));
-					console.log(`\twriting ${lang} ...`);
-					writeFileSync(`../data/${fetch.label.replace(" ", "")}/${lang}.json`, JSON.stringify(json));
+					const match = js.match(new RegExp(`var ${fetch.key}_${lang} = (\{(?:.|\n)*?\});`)) ?? [];
+					const json = match[1];
+					if (json) {
+						console.log(`\twriting ${lang} ...`);
+						writeFileSync(`../data/${fetch.label.replace(" ", "")}/${lang}.json`, JSON.stringify(json));
+					}
 				}
 			}
 		}
