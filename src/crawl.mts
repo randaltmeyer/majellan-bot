@@ -17,7 +17,7 @@ async function main() {
 		if (fetch.jsonUrl) {
 			const json = await getJson(fetch.jsonUrl).catch(console.error);
 			if (json?.status === 405) {
-				console.warn(JSON.stringify(json));
+				console.warn(`\t\t`+JSON.stringify(json));
 			}else if (json) {
 				console.log(`\twriting ...`);
 				writeFileSync(`..${fetch.file}`, JSON.stringify(json));
