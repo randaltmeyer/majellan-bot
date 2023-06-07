@@ -14,6 +14,11 @@ export type Fetch = {
 	jsUrl: string;
 	file: string;
 	key: string;
+
+	listMethod: "GET" | "POST" | "JS";
+	listKey: string;
+	nameKey: string;
+	descKey: string;
 }
 
 export type Lang = "en" | "ja" | "ko" | "zh_TW";
