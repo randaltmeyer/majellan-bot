@@ -5,7 +5,7 @@
 	{ "label":"Ailments", "jsonUrl":"https://dqt.kusoge.xyz/ailments/q", "file":"/data/ailments/all.json" },
 	{ "label":"Buffs", "jsonUrl":"https://dqt.kusoge.xyz/buffs/q", "file":"/data/buffs/all.json" },
 	{ "label":"Passives", "jsonUrl":"https://dqt.kusoge.xyz/passives/q", "file":"/data/passives/all.json" },
-	{ "label":"Drops", "jsonUrl":"https://dqt.kusoge.xyz/unitdrop/q", "file":"/data/passives/all.json" },
+	{ "label":"Drops", "jsonUrl":"https://dqt.kusoge.xyz/unitdrop/q/0", "file":"/data/passives/all.json" },
 	
 	{ "label":"Profiles", "jsUrl":"https://dqt.kusoge.xyz/json/profile.js", "file":"/data/profiles/all.js", "key":"profile" },
 	{ "label":"Stages", "jsUrl":"https://dqt.kusoge.xyz/json/stage.js", "file":"/data/stages/all.js", "key":"stage" },

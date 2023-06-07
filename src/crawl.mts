@@ -15,8 +15,9 @@ async function main() {
 
 		console.log(`\tfetching ...`);
 		if (fetch.jsonUrl) {
-			const json = await getJson(fetch.jsonUrl).catch(console.error);
-			if (json?.status === 405 || json?.status === 404) {
+			const payload = fetch.jsonUrl.endsWith("/0") ? undefined : {};
+			const json = await getJson(fetch.jsonUrl, payload).catch(console.error);
+			if (json?.status) {
 				console.warn(`\t\t`+JSON.stringify(json));
 			}else if (json) {
 				console.log(`\twriting ...`);
@@ -24,7 +25,8 @@ async function main() {
 			}
 		}
 		if (fetch.jsUrl) {
-			const js = await getText(fetch.jsUrl).catch(console.error);
+			getText;
+			const js = null as string | null; // await getText(fetch.jsUrl).catch(console.error);
 			if (js) {
 				console.log(`\twriting js ...`);
 				writeFileSync(`..${fetch.file}`, js);
