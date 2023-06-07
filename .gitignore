@@ -1,3 +1,5 @@
 node_modules
 data/bots
+dist
+types
 package-lock.json
