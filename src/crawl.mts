@@ -16,7 +16,7 @@ async function main() {
 		console.log(`\tfetching ...`);
 		if (fetch.jsonUrl) {
 			const json = await getJson(fetch.jsonUrl).catch(console.error);
-			if (json?.status === 405) {
+			if (json?.status === 405 || json?.status === 404) {
 				console.warn(`\t\t`+JSON.stringify(json));
 			}else if (json) {
 				console.log(`\twriting ...`);
