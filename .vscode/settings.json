@@ -1,0 +1,11 @@
+{
+	"diffEditor.ignoreTrimWhitespace": true,
+	
+	"editor.folding": true,
+	"editor.insertSpaces": false,
+	"editor.renderWhitespace": "all",
+	"editor.tabSize": 4,
+	"editor.wordWrap": "off",
+	"editor.minimap.enabled": false,
+	"editor.autoIndent": "full"
+}

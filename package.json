@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "discord.js": "^14.11.0",
+    "follow-redirects": "^1.15.2"
+  },
+  "devDependencies": {
+    "@types/follow-redirects": "^1.14.1"
+  }
+}
