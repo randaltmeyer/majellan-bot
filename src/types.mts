@@ -10,11 +10,14 @@ export type DropInfo = {
 
 export type Fetch = {
 	label: string;
-	url: string;
+	jsonUrl: string;
+	jsUrl: string;
 	file: string;
+	key: string;
 }
 
 export type Lang = "en" | "ja" | "ko" | "zh_TW";
+export const LANGS: Lang[] = ["en", "ja", "ko", "zh_TW"];
 
 export type StringStringMap = { [key: string]: string; };
 

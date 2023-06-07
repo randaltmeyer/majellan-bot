@@ -1,3 +1,7 @@
 [
-	{ "label":"Units List", "url":"https://dqt.kusoge.xyz/units/q", "file":"/data/units/all.json" }
+	{ "label":"Units", "jsonUrl":"https://dqt.kusoge.xyz/units/q", "file":"/data/units/all.json" },
+	{ "label":"Profiles", "jsUrl":"https://dqt.kusoge.xyz/json/profile.js", "file":"/data/profiles/all.js", "key":"profile" },
+	{ "label":"Stages", "jsUrl":"https://dqt.kusoge.xyz/json/stage.js", "file":"/data/stages/all.js", "key":"stage" },
+	{ "label":"Event Groups", "jsUrl":"https://dqt.kusoge.xyz/json/event_group.js", "file":"/data/eventGroups/all.js", "key":"event_group" }
+	
 ]
