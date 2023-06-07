@@ -32,7 +32,7 @@ async function main() {
 					const json = match[1];
 					if (json) {
 						console.log(`\twriting ${lang} ...`);
-						writeFileSync(`../data/${fetch.label.replace(" ", "")}/${lang}.json`, JSON.stringify(json));
+						writeFileSync(`../data/${fetch.label.replace(" ", "")}/${lang}.json`, json);
 					}
 				}
 			}
