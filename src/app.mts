@@ -1,52 +1,6 @@
 import { ActivityType, Client, EmbedBuilder, IntentsBitField, Interaction, Message, userMention } from "discord.js";
-import { readFileSync } from "fs";
-
-type BotInfo = { token:string; };
-type ProfileInfo = { [key: string]: string; };
-type StageInfo = { [key: string]: string; };
-type UnitInfoBase = { code:number; name:string; icon:string; }
-type UnitInfo = UnitInfoBase & { family:UnitInfoBase; role:UnitInfoBase; rarity:UnitInfoBase; weight:number; drops:DropInfo[]; };
-type DropInfo = { stageSplit:string[]; unitSplit:string[]; };
-
-function readJson(type: "bot", file: "dev"): BotInfo | null;
-function readJson(type: "profile", file: "all" | "en"): ProfileInfo | null;
-function readJson(type: "stage", file: "all" | "en"): StageInfo | null;
-function readJson(type: "unit", file: "all"): UnitInfo[] | null;
-function readJson(type: "unit", file: "drops"): DropInfo[] | null;
-function readJson<T>(type: string, file: string): T | null {
-	const contents = readFileSync(`../data/${type}s/${file}.json`, "utf8");
-	try { return JSON.parse(contents); }catch(ex) { console.error(ex); }
-	return null;
-}
-
-const keyValueMap = new Map<string, string>();
-function findKeyOrValue(key: string, value: string): string | null {
-	if (!keyValueMap.size) {
-		const profile = readJson("profile", "en");
-		if (profile) {
-			Object.keys(profile).forEach(key => keyValueMap.set(key, profile[key]));
-		}
-		const stage = readJson("stage", "en");
-		if (stage) {
-			Object.keys(stage).forEach(key => keyValueMap.set(key, stage[key]));
-		}
-	}
-	if (key) {
-		return keyValueMap.get(key) ?? null;
-	}
-	if (value) {
-		const entries = keyValueMap.entries();
-		const regex = new RegExp(`^${value}$`, "i");
-		for (const entry of entries) {
-			if (regex.test(entry[1])) {
-				return entry[0];
-			}
-		}
-	}
-	return null;
-}
-function findByKey(key: string) { return findKeyOrValue(key, ""); }
-function findByValue(value: string) { return findKeyOrValue("", value); }
+import { findByKey, findByValue, findUnit, getBotToken } from "./utils/DataUtils.mjs";
+import { UnitInfo, UnitInfoBase } from "./types.mjs";
 
 async function handleReady(client: Client): Promise<void> {
 	client.user?.setPresence({
@@ -64,10 +18,10 @@ async function handleInteractionCreate(interaction: Interaction): Promise<void> 
 
 async function handleMessageCreate(message: Message): Promise<void> {
 	if (!message.mentions.has("1115758468486397952")) return;
-	const terms = message.cleanContent.replace("@DQT Sage", "").split(" ");
+	const terms = message.cleanContent.replace("@DQT Sage", "").trim().split(" ").filter(s => s);
 	try {
 		const unitKey = await findUnitKey(...terms);
-		const unit = unitKey ? await findUnit(unitKey) : null;
+		const unit = unitKey ? findUnit(unitKey, true) : null;
 		if (unit) {
 			const content = `Hello ${userMention(message.author.id)}, I found the following unit for you:`;
 			const embeds = await embedUnit(unit);
@@ -91,26 +45,7 @@ async function findUnitKey(...terms: string[]): Promise<string | null> {
 	}
 	return null;
 }
-async function findUnit(key: string): Promise<UnitInfo | null> {
-	const all = readJson("unit", "all") ?? [];
-	for (const unit of all) {
-		if (unit.name === key) {
-			unit.drops = await findDropsByUnit(key);
-			return unit;
-		}
-	}
-	return null;
-}
-async function findDropsByUnit(unitKey: string): Promise<DropInfo[]> {
-	const all = readJson("unit", "drops") ?? [];
-	const drops: DropInfo[] = [];
-	for (const drop of all) {
-		if (drop.unitSplit.includes(unitKey)) {
-			drops.push(drop);
-		}
-	}
-	return drops;
-}
+
 async function embedUnitBase(base: UnitInfoBase, baseType: string): Promise<EmbedBuilder> {
 	const embed = new EmbedBuilder();
 	const name = findByKey(base.name) ?? base.name.split(".").pop() ?? `Unknown ${baseType}`;
@@ -154,10 +89,9 @@ const intents = [
 ];
 const clientOptions = { intents };
 const client = new Client(clientOptions);
-const token = readJson("bot", "dev")?.token;
 client.once("ready", handleReady);
 client.on("interactionCreate", handleInteractionCreate);
 client.on("messageCreate", handleMessageCreate);
-client.login(token);
+client.login(getBotToken());
 
 // node --experimental-modules --es-module-specifier-resolution=node app.mjs

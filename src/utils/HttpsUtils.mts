@@ -1,5 +1,5 @@
 import type { Override, RedirectScheme } from "follow-redirects";
-import { http, https } from "follow-redirects";
+import followRedirects from "follow-redirects";
 import type * as coreHttp from "http";
 import type * as coreHttps from "https";
 
@@ -14,7 +14,7 @@ export type thttps = Override<
 
 /** Returns http if the url starts with http://, or https otherwise. */
 export function getProtocol(url: string): thttp | thttps {
-	return url.match(/^http:\/\//i) ? http : https;
+	return url.match(/^http:\/\//i) ? followRedirects.http : followRedirects.https;
 }
 
 
