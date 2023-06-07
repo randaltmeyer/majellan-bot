@@ -1,10 +1,11 @@
 [
 	{ "label":"Units", "jsonUrl":"https://dqt.kusoge.xyz/units/q", "file":"/data/units/all.json" },
 	{ "label":"Items", "jsonUrl":"https://dqt.kusoge.xyz/items/q", "file":"/data/items/all.json" },
+	{ "label":"Skills", "jsonUrl":"https://dqt.kusoge.xyz/skills/q", "file":"/data/skills/all.json" },
 	{ "label":"Profiles", "jsUrl":"https://dqt.kusoge.xyz/json/profile.js", "file":"/data/profiles/all.js", "key":"profile" },
 	{ "label":"Stages", "jsUrl":"https://dqt.kusoge.xyz/json/stage.js", "file":"/data/stages/all.js", "key":"stage" },
 	{ "label":"Event Groups", "jsUrl":"https://dqt.kusoge.xyz/json/event_group.js", "file":"/data/eventGroups/all.js", "key":"event_group" },
 	{ "label":"Item Names", "jsUrl":"https://dqt.kusoge.xyz/json/item_name.js", "file":"/data/itemNames/all.js", "key":"item_name" },
-	{ "label":"Item Descs", "jsUrl":"https://dqt.kusoge.xyz/json/item_desc.js", "file":"/data/itemDescs/all.js", "key":"item_desc" }
-	
+	{ "label":"Item Descs", "jsUrl":"https://dqt.kusoge.xyz/json/item_desc.js", "file":"/data/itemDescs/all.js", "key":"item_desc" },
+	{ "label":"Skill Names", "jsUrl":"https://dqt.kusoge.xyz/json/skill_name.js", "file":"/data/skillNames/all.js", "key":"skill_name" }
 ]
