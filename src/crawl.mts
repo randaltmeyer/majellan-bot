@@ -15,11 +15,11 @@ async function fetchJson<T>(key: string, method: "GET" | "POST"): Promise<T | nu
 }
 
 function getJsUrl(key: string): string {
-	return `https://dqt.kusoge.xyz/json/${key}.js`;
+	return `https://dqtjp.kusoge.xyz/json/${key}.js`;
 }
 function getJsonUrl(key: string, method: "GET" | "POST"): string {
 	const suffix = method === "GET" ? "/0" : "";
-	return `https://dqt.kusoge.xyz/${key}/q${suffix}`;
+	return `https://dqtjp.kusoge.xyz/${key}/q${suffix}`;
 }
 
 type LangJson = { lang:Lang; json:string; }
