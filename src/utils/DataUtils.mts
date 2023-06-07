@@ -1,19 +1,24 @@
 import { readFileSync } from "fs";
-import { BotInfo, DropInfo, Lang, StringStringMap, UnitInfo } from "../types.mjs";
+import { BotInfo, DropInfo, Fetch, Lang, StringStringMap, UnitInfo } from "../types.mjs";
 
 function readJson(type: "bot", file: "dev"): BotInfo | null;
 function readJson(type: "profile", file: Lang): StringStringMap | null;
 function readJson(type: "stage", file: Lang): StringStringMap | null;
 function readJson(type: "unit", file: "all"): UnitInfo[] | null;
 function readJson(type: "drop", file: "all"): DropInfo[] | null;
+function readJson(type: "fetch", file: "all"): Fetch[] | null;
 function readJson<T>(type: string, file: string): T | null {
-	const contents = readFileSync(`../data/${type}s/${file}.json`, "utf8");
+	const path = type === "fetch" ? `../data/fetches.json` : `../data/${type}s/${file}.json`;
+	const contents = readFileSync(path, "utf8");
 	try { return JSON.parse(contents); }catch(ex) { console.error(ex); }
 	return null;
 }
 
 export function getBotToken(): string {
 	return readJson("bot", "dev")?.token ?? "";
+}
+export function getFetches(): Fetch[] {
+	return readJson("fetch", "all") ?? [];
 }
 
 const maps = new Map<Lang, Map<string, string>>();

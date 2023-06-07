@@ -6,7 +6,13 @@ export type BotInfo = {
 export type DropInfo = {
 	stageSplit: string[];
 	unitSplit: string[];
-};
+}
+
+export type Fetch = {
+	label: string;
+	url: string;
+	file: string;
+}
 
 export type Lang = "en" | "ja" | "ko" | "zh_TW";
 

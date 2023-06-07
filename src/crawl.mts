@@ -1,12 +1,13 @@
+import { getFetches } from "./utils/DataUtils.mjs";
 import { getJson } from "./utils/HttpsUtils.mjs";
 import { writeFileSync } from "fs";
 
-const fetches = [
-	{ label:"Units List", url:"https://dqt.kusoge.xyz/units/q", file:"/data/units/all.json" }
-];
-
 async function main() {
 	console.log("Starting main()");
+
+	console.log("Getting fetches ...");
+	const fetches = getFetches();
+	console.log("Getting fetches ... done");
 
 	for (const fetch of fetches) {
 		console.log(`Starting: ${fetch.label}`);
