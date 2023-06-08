@@ -1,6 +1,7 @@
 import { ActivityType, Client, EmbedBuilder, IntentsBitField, Interaction, Message, userMention } from "discord.js";
 import { findByKey, findByValue, findUnit, getBotToken } from "./utils/DataUtils.mjs";
-import { UnitInfo, InfoBase } from "./types.mjs";
+import { UnitInfo, InfoBase, DropInfo } from "./types.mjs";
+import { round } from "./utils/MathUtils.mjs";
 
 async function handleReady(client: Client): Promise<void> {
 	client.user?.setPresence({
@@ -75,10 +76,21 @@ async function embedUnit(unit: UnitInfo): Promise<EmbedBuilder[]> {
 	content += `\n**Weight:** ${unit.weight}`;
 	embed.setDescription(content);
 	if (unit.drops.length) {
-		embed.addFields({ name:"**Recruited From:**", value:unit.drops.map(drop => findByKey(drop.stageSplit[1])).join("\n") });
+		embed.addFields({ name:"**Recruited From**", value:unit.drops.map(formatDropInfo).filter(s=>s).join("\n") });
 	}
 
 	return embeds;
+}
+
+function formatDropInfo(dropInfo: DropInfo): string {
+	const stageKey = dropInfo.stageSplit[1];
+	const stageName = findByKey(stageKey) ?? "";
+	if (!stageName) return "";
+	const shortName = stageName?.replace("Chapter ", "Ch").replace("Episode ", "Ep");
+	const avgStam = round(dropInfo.stamrate, 2);
+	const dropPercent = dropInfo.rate / 100;
+	const best = dropInfo.best ? " :tada:" : "";
+	return `${shortName} (${dropPercent}%; Avg Stam ${avgStam}) ${best}`;
 }
 
 const intents = [
