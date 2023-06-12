@@ -61,7 +61,10 @@ function findKeyOrValue(key: string, value: string, lang?: Lang, partial?: boole
 	}
 	if (value) {
 		const entries = map.entries();
-		const regex = new RegExp(partial ? value : `^${value}$`, "i");
+		const specialChars = /[\\^$.*+?()[\]{}|]/g;
+		const regexSafeValue = value.replace(specialChars, char => "\\" + char);
+		const regexString = partial ? regexSafeValue : `^${regexSafeValue}$`;
+		const regex = new RegExp(regexString, "i");
 		for (const entry of entries) {
 			if (regex.test(entry[1])) {
 				return entry[0];
