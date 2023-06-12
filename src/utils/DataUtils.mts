@@ -94,7 +94,7 @@ export function findAllByValue(value: string, lang?: Lang): string[] {
 }
 
 const _allUnits: UnitInfo[] = [];
-function getAllUnits(): UnitInfo[] {
+export function getAllUnits(): UnitInfo[] {
 	if (!_allUnits.length) {
 		const allUnits = readJson("units", "all") ?? [];
 		allUnits.forEach(unit => {
