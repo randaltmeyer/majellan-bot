@@ -50,14 +50,14 @@ function getMap(lang: Lang = "en"): Map<string, string> {
 	return maps.get(lang)!;
 }
 
-function findKeyOrValue(key: string, value: string, lang?: Lang): string | null {
+function findKeyOrValue(key: string, value: string, lang?: Lang, partial?: boolean): string | null {
 	const map = getMap(lang);
 	if (key) {
 		return map.get(key) ?? null;
 	}
 	if (value) {
 		const entries = map.entries();
-		const regex = new RegExp(`^${value}$`, "i");
+		const regex = new RegExp(partial ? value : `^${value}$`, "i");
 		for (const entry of entries) {
 			if (regex.test(entry[1])) {
 				return entry[0];
@@ -67,9 +67,24 @@ function findKeyOrValue(key: string, value: string, lang?: Lang): string | null 
 	return null;
 }
 
-export function findByKey(key: string, lang?: Lang) { return findKeyOrValue(key, "", lang); }
+export function findByKey(key: string, lang?: Lang): string | null { return findKeyOrValue(key, "", lang); }
 
-export function findByValue(value: string, lang?: Lang) { return findKeyOrValue("", value, lang); }
+export function findByValue(value: string, lang?: Lang): string | null { return findKeyOrValue("", value, lang); }
+
+export function findAllByValue(value: string, lang?: Lang): string[] {
+	const matches: string[] = [];
+
+	const map = getMap(lang);
+	const entries = map.entries();
+
+	const regex = new RegExp(value, "i");
+	for (const entry of entries) {
+		if (regex.test(entry[1])) {
+			matches.push(entry[0]);
+		}
+	}
+	return matches;
+}
 
 export function findUnit(unitKey: string, includeDrops: boolean): UnitInfo | null {
 	const all = readJson("units", "all") ?? [];

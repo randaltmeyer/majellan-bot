@@ -1,5 +1,5 @@
 import { ActivityType, Client, EmbedBuilder, IntentsBitField, Interaction, Message, userMention } from "discord.js";
-import { findByKey, findByValue, findUnit, getBotToken } from "./utils/DataUtils.mjs";
+import { findAllByValue, findByKey, findByValue, findUnit, getBotToken } from "./utils/DataUtils.mjs";
 import { UnitInfo, InfoBase, DropInfo } from "./types.mjs";
 import { round } from "./utils/MathUtils.mjs";
 
@@ -28,23 +28,38 @@ async function handleMessageCreate(message: Message): Promise<void> {
 			const embeds = await embedUnit(unit);
 			message.channel.send({ content, embeds });
 		}else {
-			message.reply("Sorry, I couldn't find a unit for you using the terms:\n> " + terms);
+			const sorry = `Sorry, I couldn't find a unit for you using:\n> ${terms.join(" ")}`;
+			const unitKeys = await findUnitKeys(...terms);
+			const units = unitKeys.map(key => findUnit(key, false)).filter(unit => unit) as UnitInfo[];
+			const names = units.map(unit => findByKey(unit.name));
+			const but = units.length ? `\nBut, I did find the following partial matches:\n> ${names.join(", ")}` : "";
+			message.reply(sorry + but);
 		}
 	}catch(ex) {
 		console.error(ex);
 		console.debug(`messageCreate: User(${message.member?.user.tag}), Guild(${message.guild?.name})`);
-		console.debug(terms);
+		console.debug(name);
 		message.reply(`Hello ${userMention(message.author.id)}, something went wrong while I was searching!`);
 	}
 
 }
 
 async function findUnitKey(...terms: string[]): Promise<string | null> {
+	let key = findByValue(terms.join(" "));
+	if (key) return key;
 	for (const term of terms) {
-		const key = findByValue(term);
+		key = findByValue(term);
 		if (key) return key;
 	}
 	return null;
+}
+
+async function findUnitKeys(...terms: string[]): Promise<string[]> {
+	const keys: string[] = [];
+	for (const term of terms) {
+		keys.push(...findAllByValue(term, undefined));
+	}
+	return keys;
 }
 
 async function embedUnitBase(base: InfoBase, baseType: string): Promise<EmbedBuilder> {
