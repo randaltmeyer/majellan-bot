@@ -17,6 +17,21 @@ async function handleInteractionCreate(interaction: Interaction): Promise<void> 
 	console.log(`interactionCreate: User(${interaction.user.tag}), Guild(${interaction.guild?.name})`);
 }
 
+const DROP_SUPER = "¹";
+
+function mapUnitKeyToName(unitKey: string, showHasDrops = false): string | null {
+	const unit = findUnit(unitKey, showHasDrops);
+	if (unit) {
+		const name = findByKey(unit.name);
+		if (name) {
+			const cleanName = name.replace(/\*/g, "");
+			const dropSuper = showHasDrops && unit.drops.length ? DROP_SUPER : "";
+			return cleanName + dropSuper;
+		}
+	}
+	return null;
+}
+
 async function handleMessageCreate(message: Message): Promise<void> {
 	if (!message.mentions.has("1115758468486397952")) return;
 	const terms = message.cleanContent.replace("@DQT Sage", "").trim().split(" ").filter(s => s);
@@ -30,10 +45,10 @@ async function handleMessageCreate(message: Message): Promise<void> {
 		}else {
 			const sorry = `Sorry, I couldn't find a unit for you using:\n> ${terms.join(" ")}`;
 			const unitKeys = await findUnitKeys(...terms);
-			const units = unitKeys.map(key => findUnit(key, false)).filter(unit => unit) as UnitInfo[];
-			const names = units.map(unit => findByKey(unit.name));
-			const but = units.length ? `\nBut, I did find the following partial matches:\n> ${names.join(", ")}` : "";
-			message.reply(sorry + but);
+			const names = unitKeys.map(unitKey => mapUnitKeyToName(unitKey, true)).filter(name => name) as string[];
+			const but = names.length ? `\n\nBut, I did find the following partial matches:\n> ${names.join(", ")}` : "";
+			const hasDrops = but.includes(DROP_SUPER) ? `\n\n*${DROP_SUPER} denotes recruitable*` : "";
+			message.reply(sorry + but + hasDrops);
 		}
 	}catch(ex) {
 		console.error(ex);
