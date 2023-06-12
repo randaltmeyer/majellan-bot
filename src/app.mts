@@ -22,7 +22,7 @@ async function handleMessageCreate(message: Message): Promise<void> {
 	const terms = message.cleanContent.replace("@DQT Sage", "").trim().split(" ").filter(s => s);
 	try {
 		const unitKey = await findUnitKey(...terms);
-		const unit = unitKey ? findUnit(unitKey, true, true) : null;
+		const unit = unitKey ? findUnit(unitKey) : null;
 		if (unit) {
 			const content = `Hello ${userMention(message.author.id)}, I found the following unit for you:`;
 			const embeds = await embedUnit(unit);
@@ -30,7 +30,7 @@ async function handleMessageCreate(message: Message): Promise<void> {
 		}else {
 			const sorry = `Sorry, I couldn't find a unit for you using:\n> ${terms.join(" ")}`;
 			const unitKeys = await findUnitKeys(...terms);
-			const units = unitKeys.map(unitKey => findUnit(unitKey, true, true)).filter(unit => unit) as UnitInfo[];
+			const units = unitKeys.map(unitKey => findUnit(unitKey)).filter(unit => unit) as UnitInfo[];
 			const names = units.map(unit => unit.notedName);
 			const but = names.length ? `\n\nBut, I did find the following partial matches:\n> ${names.join(", ")}` : "";
 			const unreleased = but.includes(UNRELEASED_SUPER), hasDrops = but.includes(DROP_SUPER), hasNamedBattleRoads = but.includes(NAMED_BATTLE_ROAD_SUPER);

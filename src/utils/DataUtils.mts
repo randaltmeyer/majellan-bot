@@ -93,38 +93,41 @@ export function findAllByValue(value: string, lang?: Lang): string[] {
 	return matches;
 }
 
-export function findUnit(unitKey: string, includeDrops: boolean, includeBattleRoads: boolean): UnitInfo | null {
-	const all = readJson("units", "all") ?? [];
-	for (const unit of all) {
-		if (unit.name === unitKey) {
-			if (!unit.cleanName) {
-				const name = findByKey(unit.name);
-				unit.cleanName = name?.replace(/\*/, "") ?? unit.name;
-			}
-			if (!unit.notedName) {
-				const name = findByKey(unit.name);
-				unit.notedName = name?.replace(/\*/, UNRELEASED_SUPER) ?? unit.name;
-			}
-			if (includeDrops) {
-				unit.drops = findDropsByUnit(unitKey);
-				if (unit.drops.length) {
-					unit.notedName += DROP_SUPER;
-				}
-			}
-			if (includeBattleRoads) {
-				unit.hasNamedBattleRoad = findNamedBattleRoadByUnit(unit) !== null;
-				if (unit.hasNamedBattleRoad) unit.notedName += NAMED_BATTLE_ROAD_SUPER;
-			}
-			return unit;
-		}
+const _allUnits: UnitInfo[] = [];
+function getAllUnits(): UnitInfo[] {
+	if (!_allUnits.length) {
+		const allUnits = readJson("units", "all") ?? [];
+		allUnits.forEach(unit => {
+			const nameByKey = findByKey(unit.name);
+			unit.cleanName = nameByKey?.replace(/\*/, "") ?? unit.name;
+			unit.notedName = nameByKey?.replace(/\*/, UNRELEASED_SUPER) ?? unit.name;
+			unit.drops = findDropsByUnit(unit);
+			if (unit.drops.length) unit.notedName += DROP_SUPER;
+			unit.hasNamedBattleRoad = findNamedBattleRoadByUnit(unit) !== null;
+			if (unit.hasNamedBattleRoad) unit.notedName += NAMED_BATTLE_ROAD_SUPER;
+			_allUnits.push(unit);
+		});
 	}
-	return null;
+	return _allUnits;
 }
 
-function findDropsByUnit(unitKey: string): DropInfo[] {
-	const all = readJson("unitdrop", "all") ?? [];
+export function findUnit(unitKey: string): UnitInfo | null {
+	return getAllUnits().find(unit => unit.name === unitKey) ?? null;
+}
+
+const _allDropInfo: DropInfo[] = [];
+function getAllDropInfo(): DropInfo[] {
+	if (!_allDropInfo.length) {
+		const allDropInfo = readJson("unitdrop", "all") ?? [];
+		_allDropInfo.push(...allDropInfo);
+	}
+	return _allDropInfo;
+}
+function findDropsByUnit(unit: UnitInfo): DropInfo[] {
 	const drops: DropInfo[] = [];
-	for (const drop of all) {
+	const unitKey = unit.name;
+	const allDropInfo = getAllDropInfo();
+	for (const drop of allDropInfo) {
 		if (drop.unitSplit.includes(unitKey)) {
 			drops.push(drop);
 		}
