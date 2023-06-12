@@ -30,7 +30,7 @@ export function getFetches(): Fetch[] {
 
 export const UNRELEASED_SUPER = "⁰";
 export const DROP_SUPER = "¹";
-export const NAMED_BATTLE_ROAD_SUPER = "²";
+export const BATTLE_ROAD_SUPER = "²";
 
 const maps = new Map<Lang, Map<string, string>>();
 
@@ -93,18 +93,26 @@ export function findAllByValue(value: string, lang?: Lang): string[] {
 	return matches;
 }
 
+export function normalize(value: string | null): string | null {
+	return value ? value
+			.replace(/[\u2018\u2019]/g, `'`)
+			.replace(/[\u201C\u201D]/g, `"`)
+			.replace(/[\u2013\u2014]/g, `-`)
+		: value;
+}
+
 const _allUnits: UnitInfo[] = [];
 export function getAllUnits(): UnitInfo[] {
 	if (!_allUnits.length) {
 		const allUnits = readJson("units", "all") ?? [];
 		allUnits.forEach(unit => {
-			const nameByKey = findByKey(unit.name);
-			unit.cleanName = nameByKey?.replace(/\*/, "") ?? unit.name;
-			unit.notedName = nameByKey?.replace(/\*/, UNRELEASED_SUPER) ?? unit.name;
+			const nameByKey = normalize(findByKey(unit.name)) ?? unit.name;
+			unit.cleanName = nameByKey.replace(/\*/, "");
+			unit.notedName = nameByKey.replace(/\*/, UNRELEASED_SUPER);
 			unit.drops = findDropsByUnit(unit);
+			if (!unit.battleRoads) unit.battleRoads = [];
 			if (unit.drops.length) unit.notedName += DROP_SUPER;
-			unit.hasNamedBattleRoad = findNamedBattleRoadByUnit(unit) !== null;
-			if (unit.hasNamedBattleRoad) unit.notedName += NAMED_BATTLE_ROAD_SUPER;
+			if (unit.battleRoads?.length) unit.notedName += BATTLE_ROAD_SUPER;
 			_allUnits.push(unit);
 		});
 	}
@@ -133,11 +141,4 @@ function findDropsByUnit(unit: UnitInfo): DropInfo[] {
 		}
 	}
 	return drops;
-}
-
-function findNamedBattleRoadByUnit(unit: UnitInfo): string | null {
-	if (unit) {
-		return findKeyOrValue("", `${unit.cleanName} Road`, undefined, true);
-	}
-	return null;
 }

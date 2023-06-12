@@ -1,5 +1,5 @@
 import { ActivityType, Client, EmbedBuilder, IntentsBitField, Interaction, Message, userMention } from "discord.js";
-import { DROP_SUPER, NAMED_BATTLE_ROAD_SUPER, UNRELEASED_SUPER, findAllByValue, findByKey, findByValue, findUnit, getBotToken } from "./utils/DataUtils.mjs";
+import { DROP_SUPER, BATTLE_ROAD_SUPER, UNRELEASED_SUPER, findAllByValue, findByKey, findByValue, findUnit, getBotToken, normalize } from "./utils/DataUtils.mjs";
 import { UnitInfo, InfoBase, DropInfo } from "./types.mjs";
 import { round } from "./utils/MathUtils.mjs";
 
@@ -19,7 +19,7 @@ async function handleInteractionCreate(interaction: Interaction): Promise<void> 
 
 async function handleMessageCreate(message: Message): Promise<void> {
 	if (!message.mentions.has("1115758468486397952")) return;
-	const terms = message.cleanContent.replace("@DQT Sage", "").trim().split(" ").filter(s => s);
+	const terms = message.cleanContent.replace("@DQT Sage", "").trim().split(" ").filter(s => s).map(normalize) as string[];
 	try {
 		const unitKey = await findUnitKey(...terms);
 		const unit = unitKey ? findUnit(unitKey) : null;
@@ -33,13 +33,15 @@ async function handleMessageCreate(message: Message): Promise<void> {
 			const units = unitKeys.map(unitKey => findUnit(unitKey)).filter(unit => unit) as UnitInfo[];
 			const names = units.map(unit => unit.notedName);
 			const but = names.length ? `\n\nBut, I did find the following partial matches:\n> ${names.join(", ")}` : "";
-			const unreleased = but.includes(UNRELEASED_SUPER), hasDrops = but.includes(DROP_SUPER), hasNamedBattleRoads = but.includes(NAMED_BATTLE_ROAD_SUPER);
+			const unreleased = but.includes(UNRELEASED_SUPER),
+				hasDrops = but.includes(DROP_SUPER),
+				hasBattleRoads = but.includes(BATTLE_ROAD_SUPER);
 			let notes = "";
-			if (unreleased || hasDrops || hasNamedBattleRoads) {
+			if (unreleased || hasDrops || hasBattleRoads) {
 				notes += "\n";
-				if (unreleased) notes += `\n*${UNRELEASED_SUPER} denotes unreleased*`;
+				if (unreleased) notes += `\n*${UNRELEASED_SUPER} denotes new or unreleased*`;
 				if (hasDrops) notes += `\n*${DROP_SUPER} denotes recruitable*`;
-				if (hasNamedBattleRoads) notes += `\n*${NAMED_BATTLE_ROAD_SUPER} denotes named battle road*`;
+				if (hasBattleRoads) notes += `\n*${BATTLE_ROAD_SUPER} denotes battle roads*`;
 			}
 			message.reply(sorry + but + notes);
 		}
@@ -98,14 +100,13 @@ async function embedUnit(unit: UnitInfo): Promise<EmbedBuilder[]> {
 	content += `\n**${rarity} Class ${family}**`;
 	content += `\n**Role:** ${unit.role.name.split(".").pop()}`;
 	content += `\n**Weight:** ${unit.weight}`;
-	if (unit.hasNamedBattleRoad || unit.hasBattleRoad) {
-		content += `\n*Battle Road Available*`;
-	}
 	embed.setDescription(content);
 	if (unit.drops.length) {
 		embed.addFields({ name:"**Recruited From**", value:unit.drops.map(formatDropInfo).filter(s=>s).join("\n") });
 	}
-
+	if (unit.battleRoads?.length) {
+		embed.addFields({ name:"**Battle Roads**", value:unit.battleRoads.map(br => br.name).join("\n") });
+	}
 	return embeds;
 }
 

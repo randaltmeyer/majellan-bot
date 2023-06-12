@@ -68,15 +68,11 @@ export type UnitInfo = InfoBase & {
 	cleanName: string;
 	/** Name with notes about unreleased or recruitable or battle road */
 	notedName: string;
-	unreleased: string;
 
 	family: InfoBase;
 	role: InfoBase;
 	rarity: InfoBase;
 	weight: number;
 	drops: DropInfo[];
-	/** temp until i can properly pull lists */
-	hasNamedBattleRoad: boolean;
-	/** temp until i can properly pull lists */
-	hasBattleRoad: boolean;
+	battleRoads: InfoBase[];
 }
