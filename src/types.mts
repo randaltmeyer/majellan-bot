@@ -64,9 +64,19 @@ export const LANGS: Lang[] = ["en", "ja", "ko", "zh_TW"];
 export type StringStringMap = { [key: string]: string; };
 
 export type UnitInfo = InfoBase & {
+	/** Name with not notes. */
+	cleanName: string;
+	/** Name with notes about unreleased or recruitable or battle road */
+	notedName: string;
+	unreleased: string;
+
 	family: InfoBase;
 	role: InfoBase;
 	rarity: InfoBase;
 	weight: number;
 	drops: DropInfo[];
+	/** temp until i can properly pull lists */
+	hasNamedBattleRoad: boolean;
+	/** temp until i can properly pull lists */
+	hasBattleRoad: boolean;
 }

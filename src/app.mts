@@ -1,5 +1,5 @@
 import { ActivityType, Client, EmbedBuilder, IntentsBitField, Interaction, Message, userMention } from "discord.js";
-import { findAllByValue, findByKey, findByValue, findUnit, getBotToken } from "./utils/DataUtils.mjs";
+import { DROP_SUPER, NAMED_BATTLE_ROAD_SUPER, UNRELEASED_SUPER, findAllByValue, findByKey, findByValue, findUnit, getBotToken } from "./utils/DataUtils.mjs";
 import { UnitInfo, InfoBase, DropInfo } from "./types.mjs";
 import { round } from "./utils/MathUtils.mjs";
 
@@ -17,27 +17,12 @@ async function handleInteractionCreate(interaction: Interaction): Promise<void> 
 	console.log(`interactionCreate: User(${interaction.user.tag}), Guild(${interaction.guild?.name})`);
 }
 
-const DROP_SUPER = "¹";
-
-function mapUnitKeyToName(unitKey: string, showHasDrops = false): string | null {
-	const unit = findUnit(unitKey, showHasDrops);
-	if (unit) {
-		const name = findByKey(unit.name);
-		if (name) {
-			const cleanName = name.replace(/\*/g, "");
-			const dropSuper = showHasDrops && unit.drops.length ? DROP_SUPER : "";
-			return cleanName + dropSuper;
-		}
-	}
-	return null;
-}
-
 async function handleMessageCreate(message: Message): Promise<void> {
 	if (!message.mentions.has("1115758468486397952")) return;
 	const terms = message.cleanContent.replace("@DQT Sage", "").trim().split(" ").filter(s => s);
 	try {
 		const unitKey = await findUnitKey(...terms);
-		const unit = unitKey ? findUnit(unitKey, true) : null;
+		const unit = unitKey ? findUnit(unitKey, true, true) : null;
 		if (unit) {
 			const content = `Hello ${userMention(message.author.id)}, I found the following unit for you:`;
 			const embeds = await embedUnit(unit);
@@ -45,10 +30,18 @@ async function handleMessageCreate(message: Message): Promise<void> {
 		}else {
 			const sorry = `Sorry, I couldn't find a unit for you using:\n> ${terms.join(" ")}`;
 			const unitKeys = await findUnitKeys(...terms);
-			const names = unitKeys.map(unitKey => mapUnitKeyToName(unitKey, true)).filter(name => name) as string[];
+			const units = unitKeys.map(unitKey => findUnit(unitKey, true, true)).filter(unit => unit) as UnitInfo[];
+			const names = units.map(unit => unit.notedName);
 			const but = names.length ? `\n\nBut, I did find the following partial matches:\n> ${names.join(", ")}` : "";
-			const hasDrops = but.includes(DROP_SUPER) ? `\n\n*${DROP_SUPER} denotes recruitable*` : "";
-			message.reply(sorry + but + hasDrops);
+			const unreleased = but.includes(UNRELEASED_SUPER), hasDrops = but.includes(DROP_SUPER), hasNamedBattleRoads = but.includes(NAMED_BATTLE_ROAD_SUPER);
+			let notes = "";
+			if (unreleased || hasDrops || hasNamedBattleRoads) {
+				notes += "\n";
+				if (unreleased) notes += `\n*${UNRELEASED_SUPER} denotes unreleased*`;
+				if (hasDrops) notes += `\n*${DROP_SUPER} denotes recruitable*`;
+				if (hasNamedBattleRoads) notes += `\n*${NAMED_BATTLE_ROAD_SUPER} denotes named battle road*`;
+			}
+			message.reply(sorry + but + notes);
 		}
 	}catch(ex) {
 		console.error(ex);

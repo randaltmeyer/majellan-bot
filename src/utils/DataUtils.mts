@@ -28,6 +28,10 @@ export function getFetches(): Fetch[] {
 	return readJson("fetches", "all") ?? [];
 }
 
+export const UNRELEASED_SUPER = "⁰";
+export const DROP_SUPER = "¹";
+export const NAMED_BATTLE_ROAD_SUPER = "²";
+
 const maps = new Map<Lang, Map<string, string>>();
 
 /**
@@ -86,12 +90,27 @@ export function findAllByValue(value: string, lang?: Lang): string[] {
 	return matches;
 }
 
-export function findUnit(unitKey: string, includeDrops: boolean): UnitInfo | null {
+export function findUnit(unitKey: string, includeDrops: boolean, includeBattleRoads: boolean): UnitInfo | null {
 	const all = readJson("units", "all") ?? [];
 	for (const unit of all) {
 		if (unit.name === unitKey) {
+			if (!unit.cleanName) {
+				const name = findByKey(unit.name);
+				unit.cleanName = name?.replace(/\*/, "") ?? unit.name;
+			}
+			if (!unit.notedName) {
+				const name = findByKey(unit.name);
+				unit.notedName = name?.replace(/\*/, UNRELEASED_SUPER) ?? unit.name;
+			}
 			if (includeDrops) {
 				unit.drops = findDropsByUnit(unitKey);
+				if (unit.drops.length) {
+					unit.notedName += DROP_SUPER;
+				}
+			}
+			if (includeBattleRoads) {
+				unit.hasNamedBattleRoad = findNamedBattleRoadByUnit(unit) !== null;
+				if (unit.hasNamedBattleRoad) unit.notedName += NAMED_BATTLE_ROAD_SUPER;
 			}
 			return unit;
 		}
@@ -99,7 +118,7 @@ export function findUnit(unitKey: string, includeDrops: boolean): UnitInfo | nul
 	return null;
 }
 
-export function findDropsByUnit(unitKey: string): DropInfo[] {
+function findDropsByUnit(unitKey: string): DropInfo[] {
 	const all = readJson("unitdrop", "all") ?? [];
 	const drops: DropInfo[] = [];
 	for (const drop of all) {
@@ -108,4 +127,11 @@ export function findDropsByUnit(unitKey: string): DropInfo[] {
 		}
 	}
 	return drops;
+}
+
+function findNamedBattleRoadByUnit(unit: UnitInfo): string | null {
+	if (unit) {
+		return findKeyOrValue("", `${unit.cleanName} Road`, undefined, true);
+	}
+	return null;
 }
