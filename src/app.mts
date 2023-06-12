@@ -93,10 +93,14 @@ async function embedUnit(unit: UnitInfo): Promise<EmbedBuilder[]> {
 	// embeds.push(roleEmbed);
 
 	let content = ``;
-	content += `\n**Rarity:** ${unit.rarity.name.split(".").pop()}`;
-	content += `\n**Family:** ${unit.family.name.split(".").pop()}`;
+	const rarity = unit.rarity.name.split(".").pop();
+	const family = unit.family.name.split(".").pop();
+	content += `\n**${rarity} Class ${family}**`;
 	content += `\n**Role:** ${unit.role.name.split(".").pop()}`;
 	content += `\n**Weight:** ${unit.weight}`;
+	if (unit.hasNamedBattleRoad || unit.hasBattleRoad) {
+		content += `\n*Battle Road Available*`;
+	}
 	embed.setDescription(content);
 	if (unit.drops.length) {
 		embed.addFields({ name:"**Recruited From**", value:unit.drops.map(formatDropInfo).filter(s=>s).join("\n") });
