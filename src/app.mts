@@ -7,8 +7,8 @@ async function handleReady(client: Client): Promise<void> {
 	client.user?.setPresence({
 		status: "online"
 	});
-	client.user?.setActivity("check back later ...", {
-		type: ActivityType.Playing
+	client.user?.setActivity("Mindini get lost ...", {
+		type: ActivityType.Watching
 	});
 	console.log("ready");
 }
