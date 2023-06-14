@@ -15,7 +15,8 @@ function formatDropInfo(dropInfo: DropInfo): string {
 }
 
 const EMOJI = {
-	characterBuilder: "<:999:1118620463527104532>",
+	characterBuilderOld: "<:998:1118620463527104532>",
+	characterBuilder: "<:999:1118621771852157008>",
 	talentBlossom: "<:000:1118597460101697556>",
 	beast: "<:001:1118599798149365811>",
 	demon: "<:002:1118599804843462747>",
