@@ -49,7 +49,7 @@ export async function embedUnit(unit: UnitInfo): Promise<EmbedBuilder[]> {
 	const embed = new EmbedBuilder();
 	embeds.push(embed);
 	
-	embed.setTitle(unit.cleanName);
+	embed.setTitle(`**${unit.cleanName}**`);
 	
 	embed.setThumbnail(`https://dqt.kusoge.xyz/img/icon/${unit.icon}`);
 
@@ -57,14 +57,13 @@ export async function embedUnit(unit: UnitInfo): Promise<EmbedBuilder[]> {
 	const family = unit.family.name.split(".").pop()?.toLowerCase() as keyof typeof EMOJI;
 	const role = unit.role.name.split(".").pop()?.toLowerCase() as keyof typeof EMOJI;
 	
-	if (!EMOJI[rarity]) console.log(unit.rarity.name, EMOJI[rarity]);
-	if (!EMOJI[family]) console.log(unit.family.name, EMOJI[family]);
-	if (!EMOJI[role]) console.log(unit.role.name, EMOJI[role]);
+	// if (!EMOJI[rarity]) console.log(unit.rarity.name, EMOJI[rarity]);
+	// if (!EMOJI[family]) console.log(unit.family.name, EMOJI[family]);
+	// if (!EMOJI[role]) console.log(unit.role.name, EMOJI[role]);
 
 	let content = `${EMOJI[rarity]} ${EMOJI[family]} ${EMOJI[role]}`;
+	if (unit.talent) content += " " + EMOJI.talentBlossom;
 	content += `\n**Weight:** ${unit.weight}`;
-	content += `\n`;
-	if (unit.talent) content += EMOJI.talentBlossom;
 	embed.setDescription(content.trim());
 	if (unit.drops.length) {
 		embed.addFields({ name:"**Recruited From**", value:unit.drops.map(formatDropInfo).filter(s=>s).join("\n") });
