@@ -74,7 +74,7 @@ export type UnitPassiveInfo = InfoBase & {
 export type UnitInfo = InfoBase & {
 	/** The unique identifier originally stored in the name field when fetched. */
 	key: string;
-	/** Name with not notes. */
+	/** Name with no notes. */
 	cleanName: string;
 	/** Name with notes about unreleased or recruitable or battle road */
 	notedName: string;
@@ -93,6 +93,37 @@ export type UnitInfo = InfoBase & {
 	drops: DropInfo[];
 	battleRoads: InfoBase[];
 	weapon?: InfoBase;
+}
+
+export type ItemInfo = InfoBase & {
+	/** The unique identifier originally stored in the name field when fetched. */
+	key: string;
+	/** Name with no notes. */
+	cleanName: string;
+	notedName: string;
+
+	/** unique identifier originally stored in the description field when fetched. */
+	descKey: string;
+	description: string;
+
+	max: number;
+	skill: any | null;
+	rankItem: any | null;
+	rankEquip: InfoBase & {
+		/** image filename */
+		background: string;
+		/** image filename */
+		frame: string;
+		/** image filename */
+		material: string;
+	};
+	type: number;
+	subtype: number;
+	/** nameKey + "\n" + descKey */
+	zzz: string;
+
+	/** unit.code */
+	units: number[];
 }
 
 export type Nullable<T> = T | null;

@@ -10,14 +10,15 @@ const maps = new Map<Lang, Map<string, string>>();
 export function getKeyNameMap(lang: Lang = "en"): Map<string, string> {
 	if (!maps.has(lang)) {
 		const map = new Map();
-		const profile = readJson("units/name", lang);
-		if (profile) {
-			Object.keys(profile).forEach(key => map.set(key, profile[key]));
-		}
-		const stage = readJson("stage", lang);
-		if (stage) {
-			Object.keys(stage).forEach(key => map.set(key, stage[key]));
-		}
+
+		const dataSets = ["units/name", "items/name", "stage"];
+		dataSets.forEach(dataSet => {
+			const data = readJson(dataSet as "stage", lang);
+			if (data) {
+				Object.keys(data).forEach(key => map.set(key, data[key]));
+			}
+		});
+
 		maps.set(lang, map);
 	}
 	return maps.get(lang)!;

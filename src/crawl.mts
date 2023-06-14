@@ -3,6 +3,7 @@ import { getAllUnits } from "./data/getAllUnits.mjs";
 import { readJson } from "./data/readJson.mjs";
 import { InfoBase, LANGS, Lang } from "./types.mjs";
 import { getJson, getText } from "./utils/HttpsUtils.mjs";
+import { getAllItems } from "./data/getAllItems.mjs";
 
 async function fetchJson<T>(key: string, method: "GET" | "POST"): Promise<T | null> {
 	const url = getJsonUrl(key, method);
@@ -82,9 +83,8 @@ async function main() {
 		}
 	}
 
-	console.log("Loading Units ...");
+	console.log("Updating Units ...");
 	const allUnits = getAllUnits();
-	console.log("Loading Units ... done");
 	for (const unit of allUnits) {
 		console.log(`Fetching Unit "${unit.cleanName}" ...`);
 		const html = await getText(`https://dqtjp.kusoge.xyz/unit/${unit.code}`);
@@ -100,7 +100,30 @@ async function main() {
 		}
 	}
 	writeFile(`../data/units/all.json`, allUnits);
-	console.log("Writing Units w/ Battle Roads ... done");
+	console.log("Updating Units ... done");
+
+	console.log("Updating Items ...");
+	const allItems = getAllItems();
+	for (const item of allItems) {
+		console.log(`Fetching Item "${item.cleanName}" ...`);
+		const itemHtml = await getText(`https://dqtjp.kusoge.xyz/item/${item.code}`);
+		const passives = itemHtml.match(/"\/passive\/\d+"/g) ?? [];
+		for (const passive of passives) {
+			const passiveCode = +((passive.match(/\d+/) ?? [])[0] ?? 0);
+			if (passiveCode) {
+				const passiveHtml = await getText(`https://dqtjp.kusoge.xyz/passive/${passiveCode}`);
+				const skills = passiveHtml.match(/"\/skill\/\d+"/g) ?? [];
+				for (const skill of skills) {
+					const skillCode = +((skill.match(/\d+/) ?? [])[0] ?? 0);
+					const skillHtml = await getText(`https://dqtjp.kusoge.xyz/skill/${skillCode}`);
+					const units = skillHtml.match(/"\/unit\/\d+"/g) ?? [];
+					const unitCodes = units.map(unit => unit.match(/\d+/)?.[0]).map(s => +(s??"")).filter(n => n);
+					item.units = unitCodes;
+				}
+			}
+		}
+	}
+	console.log("Updating Items ... done");
 
 	console.log("Finished main()");
 }
