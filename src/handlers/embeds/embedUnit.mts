@@ -1,7 +1,7 @@
 import { EmbedBuilder } from "discord.js";
-import { DropInfo, UnitInfo } from "../types.mjs";
-import { round } from "../utils/round.mjs";
-import { findKeyOrValue } from "../data/findKeyOrValue.mjs";
+import { DropInfo, UnitInfo } from "../../types.mjs";
+import { round } from "../../utils/round.mjs";
+import { findKeyOrValue } from "../../data/findKeyOrValue.mjs";
 
 function formatDropInfo(dropInfo: DropInfo): string {
 	const stageKey = dropInfo.stageSplit[1];

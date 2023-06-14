@@ -1,12 +1,39 @@
-import { Message, userMention } from "discord.js";
+import { Channel, CrosspostedChannel, Message, userMention } from "discord.js";
 import { findUnits } from "../data/findUnits.mjs";
-import { BATTLE_ROAD_SUPER, DROP_SUPER, UNRELEASED_SUPER } from "../types.mjs";
-import { embedUnit } from "./embedUnit.mjs";
+import { BATTLE_ROAD_SUPER, DROP_SUPER, Optional, UNRELEASED_SUPER } from "../types.mjs";
+import { embedUnit } from "./embeds/embedUnit.mjs";
+import { canRespond } from "../utils/canRespond.mjs";
+
+function getChannelName(channel: Channel | CrosspostedChannel): string | null {
+	if ("name" in channel) return channel.name;
+	return null;
+}
+
+function cleanContent(message: Message): string {
+	let content = message.cleanContent;
+	scrub("@", "here", "everyone");
+	scrub("@", message.mentions.repliedUser?.username);
+	message.mentions.roles.forEach(role => scrub("@", role.name));
+	message.mentions.users.forEach(user => scrub("@", user.username));
+	message.mentions.parsedUsers.forEach(user => scrub("@", user.username));
+	message.mentions.members?.forEach(member => scrub("@", member.nickname, member.displayName));
+	message.mentions.users.forEach(user => scrub("@", user.username));
+	message.mentions.channels.forEach(channel => scrub("#", getChannelName(channel)));
+	message.mentions.crosspostedChannels.forEach(channel => scrub("#", getChannelName(channel)));
+	return content;
+
+	function scrub(prefix: "@" | "#", ...names: (Optional<string>)[]) {
+		names.filter(s => s).forEach(name => content = content.replace(`${prefix}${name}`, ""));
+		content = content.replace(/\s+/g, " ").trim();
+	}
+}
 
 export async function handleMessageCreate(message: Message): Promise<void> {
-	if (!message.mentions.has("1115758468486397952")) return;
+	if (!canRespond(message)) {
+		return;
+	}
 	try {
-		const content = message.cleanContent.replace("@DQT Sage", "").trim();
+		const content = cleanContent(message);
 		const units = findUnits(content);
 		if (units.byName) {
 			const content = `Hello ${userMention(message.author.id)}, I found this unit:`;

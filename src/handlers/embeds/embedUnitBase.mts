@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "discord.js";
-import { InfoBase } from "../types.mjs";
-import { findKeyOrValue } from "../data/findKeyOrValue.mjs";
+import { InfoBase } from "../../types.mjs";
+import { findKeyOrValue } from "../../data/findKeyOrValue.mjs";
 
 export async function embedUnitBase(base: InfoBase, baseType: string): Promise<EmbedBuilder> {
 	const embed = new EmbedBuilder();
