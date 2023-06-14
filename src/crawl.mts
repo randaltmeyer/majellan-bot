@@ -1,7 +1,8 @@
+import { existsSync, mkdirSync, writeFileSync } from "fs";
+import { getAllUnits } from "./data/getAllUnits.mjs";
+import { readJson } from "./data/readJson.mjs";
 import { InfoBase, LANGS, Lang } from "./types.mjs";
-import { getAllUnits, getFetches } from "./utils/DataUtils.mjs";
 import { getJson, getText } from "./utils/HttpsUtils.mjs";
-import { writeFileSync, existsSync, mkdirSync } from "fs";
 
 async function fetchJson<T>(key: string, method: "GET" | "POST"): Promise<T | null> {
 	const url = getJsonUrl(key, method);
@@ -53,7 +54,7 @@ async function main() {
 	console.log("Starting main()");
 
 	console.log("Getting fetches ...");
-	const fetches = getFetches();
+	const fetches = readJson("fetches", "all") ?? [];
 	console.log("Getting fetches ... done");
 
 	for (const fetch of fetches) {
@@ -97,9 +98,6 @@ async function main() {
 				}).filter(br => br) as InfoBase[];
 			}
 		}
-		delete (unit as any).cleanName;
-		delete (unit as any).notedName;
-		delete (unit as any).drops;
 	}
 	writeFile(`../data/units/all.json`, allUnits);
 	console.log("Writing Units w/ Battle Roads ... done");

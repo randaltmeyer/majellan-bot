@@ -42,7 +42,7 @@ export type DropInfo = {
 	stageSplit: string[];
 	/** [unitCode, unitKey, unitIcon, rankIcon, familyIcon] */
 	unitSplit: string[];
-}
+};
 
 export type Fetch = {
 	label: string;
@@ -63,7 +63,17 @@ export const LANGS: Lang[] = ["en", "ja", "ko", "zh_TW"];
 
 export type StringStringMap = { [key: string]: string; };
 
+export type UnitPassiveInfo = InfoBase & {
+	passive: InfoBase & {
+		boost: InfoBase & {
+			skill: InfoBase; // <-- skill.name is the skill key we want to look for
+		}
+	};
+};
+
 export type UnitInfo = InfoBase & {
+	/** The unique identifier originally stored in the name field when fetched. */
+	key: string;
 	/** Name with not notes. */
 	cleanName: string;
 	/** Name with notes about unreleased or recruitable or battle road */
@@ -73,6 +83,18 @@ export type UnitInfo = InfoBase & {
 	role: InfoBase;
 	rarity: InfoBase;
 	weight: number;
+	talent?: 1;
+
+	passives: UnitPassiveInfo[];
+
 	drops: DropInfo[];
 	battleRoads: InfoBase[];
+	weapon?: InfoBase;
 }
+
+export type Nullable<T> = T | null;
+export type Optional<T> = T | null | undefined;
+
+export const UNRELEASED_SUPER = "⁰";
+export const DROP_SUPER = "¹";
+export const BATTLE_ROAD_SUPER = "²";
