@@ -18,13 +18,17 @@ const EMOJI = {
 	talentBlossom: "<:000:1118597460101697556>",
 	beast: "<:001:1118599798149365811>",
 	demon: "<:002:1118599804843462747>",
+	devil: "<:002:1118599804843462747>",
 	dragon: "<:003:1118599806416322592>",
 	hero: "<:004:1118599813219483708>",
 	inorganic: "<:005:1118599814452629584>",
+	material: "<:005:1118599814452629584>",
 	mystery: "<:006:1118599815878692964>",
+	unknown: "<:006:1118599815878692964>",
 	nature: "<:007:1118600211229581345>",
 	slime: "<:008:1118600213649686638>",
 	undead: "<:009:1118599822375665716>",
+	zombie: "<:009:1118599822375665716>",
 	a: "<:aaa:1118599793707581541>",
 	b: "<:bbb:1118599794848448684>",
 	c: "<:ccc:1118599800573657238>",
@@ -52,6 +56,11 @@ export async function embedUnit(unit: UnitInfo): Promise<EmbedBuilder[]> {
 	const rarity = unit.rarity.name.split(".").pop()?.toLowerCase() as keyof typeof EMOJI;
 	const family = unit.family.name.split(".").pop()?.toLowerCase() as keyof typeof EMOJI;
 	const role = unit.role.name.split(".").pop()?.toLowerCase() as keyof typeof EMOJI;
+	
+	if (!EMOJI[rarity]) console.log(unit.rarity.name, EMOJI[rarity]);
+	if (!EMOJI[family]) console.log(unit.family.name, EMOJI[family]);
+	if (!EMOJI[role]) console.log(unit.role.name, EMOJI[role]);
+
 	let content = `${EMOJI[rarity]} ${EMOJI[family]} ${EMOJI[role]}`;
 	content += `\n**Weight:** ${unit.weight}`;
 	content += `\n`;
