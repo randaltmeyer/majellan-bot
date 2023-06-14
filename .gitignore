@@ -3,3 +3,4 @@ data/bots
 dist
 types
 package-lock.json
+.DS_Store

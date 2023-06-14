@@ -14,22 +14,49 @@ function formatDropInfo(dropInfo: DropInfo): string {
 	return `${shortName} (${dropPercent}%; Avg Stam ${avgStam}) ${best}`;
 }
 
+const EMOJI = {
+	talentBlossom: "<:000:1118597460101697556>",
+	beast: "<:001:1118599798149365811>",
+	demon: "<:002:1118599804843462747>",
+	dragon: "<:003:1118599806416322592>",
+	hero: "<:004:1118599813219483708>",
+	inorganic: "<:005:1118599814452629584>",
+	mystery: "<:006:1118599815878692964>",
+	nature: "<:007:1118600211229581345>",
+	slime: "<:008:1118600213649686638>",
+	undead: "<:009:1118599822375665716>",
+	a: "<:aaa:1118599793707581541>",
+	b: "<:bbb:1118599794848448684>",
+	c: "<:ccc:1118599800573657238>",
+	d: "<:ddd:1118599802062647327>",
+	e: "<:eee:1118599809457209465>",
+	f: "<:fff:1118599810711294064>",
+	s: "<:sss:1118599819179597944>",
+	attacker: "<:010:1118604458356654141>",
+	debuffer: "<:011:1118604460705464412>",
+	tank: "<:012:1118604462353829930>",
+	magician: "<:013:1118604463846993981>",
+	supporter: "<:014:1118604466371956736>"
+};
+
 export async function embedUnit(unit: UnitInfo): Promise<EmbedBuilder[]> {
 	const embeds: EmbedBuilder[] = [];
 
 	const embed = new EmbedBuilder();
-	embed.setTitle(unit.cleanName);
-	embed.setThumbnail(`https://dqt.kusoge.xyz/img/icon/${unit.icon}`);
 	embeds.push(embed);
+	
+	embed.setTitle(unit.cleanName);
+	
+	embed.setThumbnail(`https://dqt.kusoge.xyz/img/icon/${unit.icon}`);
 
-	let content = ``;
-	const rarity = unit.rarity.name.split(".").pop();
-	const family = unit.family.name.split(".").pop();
-	content += `\n**${rarity} Class ${family}**`;
-	content += `\n**Role:** ${unit.role.name.split(".").pop()}`;
+	const rarity = unit.rarity.name.split(".").pop()?.toLowerCase() as keyof typeof EMOJI;
+	const family = unit.family.name.split(".").pop()?.toLowerCase() as keyof typeof EMOJI;
+	const role = unit.role.name.split(".").pop()?.toLowerCase() as keyof typeof EMOJI;
+	let content = `${EMOJI[rarity]} ${EMOJI[family]} ${EMOJI[role]}`;
 	content += `\n**Weight:** ${unit.weight}`;
-	content += `\n**Talent Blossoming:** ${unit.talent ? "Yes" : "No"}`;
-	embed.setDescription(content);
+	content += `\n`;
+	if (unit.talent) content += EMOJI.talentBlossom;
+	embed.setDescription(content.trim());
 	if (unit.drops.length) {
 		embed.addFields({ name:"**Recruited From**", value:unit.drops.map(formatDropInfo).filter(s=>s).join("\n") });
 	}
