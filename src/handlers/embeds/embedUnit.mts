@@ -15,6 +15,7 @@ function formatDropInfo(dropInfo: DropInfo): string {
 }
 
 const EMOJI = {
+	characterBuilder: "<:999:1118620463527104532>",
 	talentBlossom: "<:000:1118597460101697556>",
 	beast: "<:001:1118599798149365811>",
 	demon: "<:002:1118599804843462747>",
@@ -63,6 +64,7 @@ export async function embedUnit(unit: UnitInfo): Promise<EmbedBuilder[]> {
 
 	let content = `${EMOJI[rarity]} ${EMOJI[family]} ${EMOJI[role]}`;
 	if (unit.talent) content += " " + EMOJI.talentBlossom;
+	if (unit.sp) content += " " + EMOJI.characterBuilder;
 	content += `\n**Weight:** ${unit.weight}`;
 	embed.setDescription(content.trim());
 	if (unit.drops.length) {

@@ -83,7 +83,10 @@ export type UnitInfo = InfoBase & {
 	role: InfoBase;
 	rarity: InfoBase;
 	weight: number;
+	/** talent blossoming */
 	talent?: 1;
+	/** character builder */
+	sp?: 1;
 
 	passives: UnitPassiveInfo[];
 
