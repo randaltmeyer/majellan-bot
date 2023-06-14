@@ -17,7 +17,7 @@ export function getAllItems(): ItemInfo[] {
 				item.notedName = item.name.replace(/\*/, UNRELEASED_SUPER);
 				item.units = [];
 			}
-			allItems.push(item);
+			_allItems.push(item);
 		});
 	}
 	return _allItems;
