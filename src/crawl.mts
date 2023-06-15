@@ -4,6 +4,7 @@ import { readJson } from "./data/readJson.mjs";
 import { InfoBase, LANGS, Lang } from "./types.mjs";
 import { getDqtJpHtml, getDqtJpJs, getDqtJpJson } from "./data/getDqtJpData.mjs";
 import { getAllItems } from "./data/getAllItems.mjs";
+import { normalizeString } from "./utils/normalizeString.mjs";
 
 
 
@@ -82,7 +83,7 @@ async function main() {
 				if (battleRoadMatches?.length) {
 					unit.battleRoads = battleRoadMatches.map(aTag => {
 						const match = aTag.match(/<a\s+class="text"\s+href="\/event\/area\/(\d+)">(.*?)<\/a>/);
-						return match ? { code:+match[1], name:match[2], icon:"" } : null;
+						return match ? { code:+match[1], name:normalizeString(match[2]), icon:"" } : null;
 					}).filter(br => br) as InfoBase[];
 				}
 			}
