@@ -41,13 +41,13 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 	try {
 		const units = findUnits(content);
 		if (units.byName) {
-			const content = `Hello ${userMention(message.author.id)}, I found this unit:`;
+			const content = `Hello, I found this unit:`;
 			const embeds = await embedUnit(units.byName);
-			message.channel.send({ content, embeds });
+			message.reply({ content, embeds });
 		}else if (units.closest) {
-			const content = `Hello ${userMention(message.author.id)}, this is the closest unit I could find:`;
+			const content = `Hello, this is the closest unit I could find:`;
 			const embeds = await embedUnit(units.closest);
-			message.channel.send({ content, embeds });
+			message.reply({ content, embeds });
 		}else {
 			const sorry = `Sorry, I couldn't find a unit using:\n> ${content}`;
 			let but = "";
