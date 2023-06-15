@@ -72,7 +72,7 @@ export async function embedUnit(unit: UnitInfo): Promise<EmbedBuilder[]> {
 	if (unit.sp) content += " " + EMOJI.characterBuilder;
 	content += `\n**Weight:** ${unit.weight}`;
 	if (items.length) {
-		content += `\nEquipment: ${items.map(item => item.cleanName).join(", ")}`;
+		content += `\n**Equipment**: ${items.map(item => item.cleanName).join(", ")}`;
 	}
 	embed.setDescription(content.trim());
 	if (unit.drops.length) {
