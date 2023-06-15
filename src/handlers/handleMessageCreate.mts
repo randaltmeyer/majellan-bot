@@ -34,7 +34,7 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 	}
 	const content = cleanContent(message);
 	if (content.length < 3) {
-		const content = `Hello ${userMention(message.author.id)}, I can only search for names of 3 or more characters.`;
+		const content = `Hello, I can only search for names of 3 or more characters.`;
 		await message.reply(content);
 		return;
 	}
