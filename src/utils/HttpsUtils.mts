@@ -100,7 +100,36 @@ export function getText<T = any>(url: string, postData?: T): Promise<string> {
 	});
 }
 
-export async function getDqtJpText(type: "item" | "passive" | "skill" | "unit", code: number, skipReadCache = false, skipWriteCache = false): Promise<string> {
+export async function getDqtJpJs(key: string, skipReadCache = false, skipWriteCache = false): Promise<string> {
+	const cacheDirPath = `../data/cache/js`;
+	const cacheFilePath = `${cacheDirPath}/${key}.js`;
+	if (!skipReadCache) {
+		try {
+			if (existsSync(cacheFilePath)) {
+				console.log(`\tReading cache: ${cacheFilePath}`);
+				const cacheJs = readFileSync(cacheFilePath, "utf8");
+				if (cacheJs) {
+					return cacheJs
+				}
+			}
+		}catch(ex) {
+			console.error("Error reading cache: " + cacheFilePath);
+		}
+	}
+	const url = `https://dqtjp.kusoge.xyz/json/${key}.js`;
+	console.log(`\tReading url: ${url}`);
+	const js = await getText(url).catch(console.error);
+	if (!js) {
+		console.warn(`\t\tNo JS received!`);
+	}else if (!skipWriteCache) {
+		console.log(`\tWriting cache: ${cacheFilePath}`);
+		mkdirSync(cacheDirPath, { recursive:true });
+		writeFileSync(cacheFilePath, js);
+	}
+	return js ?? "";
+}
+
+export async function getDqtJpHtml(type: "item" | "passive" | "skill" | "unit", code: number, skipReadCache = false, skipWriteCache = false): Promise<string> {
 	const cacheDirPath = `../data/cache/${type}`;
 	const cacheFilePath = `${cacheDirPath}/${code}.html`;
 	if (!skipReadCache) {
@@ -118,7 +147,7 @@ export async function getDqtJpText(type: "item" | "passive" | "skill" | "unit", 
 	}
 	const url = `https://dqtjp.kusoge.xyz/${type}/${code}`;
 	console.log(`\tReading url: ${url}`);
-	const html = await getText(url);
+	const html = await getText(url).catch(console.error);
 	if (!html) {
 		console.warn(`\t\tNo HTML received!`);
 	}else if (!skipWriteCache) {
@@ -126,7 +155,7 @@ export async function getDqtJpText(type: "item" | "passive" | "skill" | "unit", 
 		mkdirSync(cacheDirPath, { recursive:true });
 		writeFileSync(cacheFilePath, html);
 	}
-	return html;
+	return html ?? "";
 }
 
 /** Convenience wrapper for getText(url).then(text => JSON.parse(text)) */

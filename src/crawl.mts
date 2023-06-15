@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { getAllUnits } from "./data/getAllUnits.mjs";
 import { readJson } from "./data/readJson.mjs";
 import { InfoBase, LANGS, Lang } from "./types.mjs";
-import { getDqtJpText, getJson, getText } from "./utils/HttpsUtils.mjs";
+import { getDqtJpHtml, getDqtJpJs, getJson } from "./utils/HttpsUtils.mjs";
 import { getAllItems } from "./data/getAllItems.mjs";
 
 async function fetchJson<T>(key: string, method: "GET" | "POST"): Promise<T | null> {
@@ -16,9 +16,6 @@ async function fetchJson<T>(key: string, method: "GET" | "POST"): Promise<T | nu
 	return json ?? null;
 }
 
-function getJsUrl(key: string): string {
-	return `https://dqtjp.kusoge.xyz/json/${key}.js`;
-}
 function getJsonUrl(key: string, method: "GET" | "POST"): string {
 	const suffix = method === "GET" ? "/0" : "";
 	return `https://dqtjp.kusoge.xyz/${key}/q${suffix}`;
@@ -28,7 +25,7 @@ type LangJson = { lang:Lang; json:string; }
 async function fetchAndParseJs(key: string): Promise<LangJson[]> {
 	const langJson = [];
 	if (key) {
-		const js = await getText(getJsUrl(key)).catch(console.error);
+		const js = await getDqtJpJs(key);
 		if (js) {
 			for (const lang of LANGS) {
 				const match = js.match(new RegExp(`var ${key}_${lang} = (\{(?:.|\n)*?\});`)) ?? [];
@@ -94,7 +91,7 @@ async function main() {
 		const allUnits = getAllUnits();
 		for (const unit of allUnits) {
 			console.log(`Fetching Unit "${unit.cleanName}" ...`);
-			const html = await getDqtJpText("unit", unit.code, skipReadCache, skipWriteCache);
+			const html = await getDqtJpHtml("unit", unit.code, skipReadCache, skipWriteCache);
 			const battleRoadSection = html.match(/Battle road\:<\/div>(.|\n)+<div class="ar">/)?.[0];
 			if (battleRoadSection) {
 				const battleRoadMatches = battleRoadSection.replace(/\s/g, " ").match(/<a\s+class="text"\s+href="\/event\/area\/(\d+)">(.*?)<\/a>/g);
@@ -115,18 +112,17 @@ async function main() {
 		const allItems = getAllItems();
 		for (const item of allItems) {
 			if (item.key.includes("EquipmentProfile") && item.rankEquip?.name?.match(/\.[AS]$/)) {
-				if (item.cleanName !== "Zenithian Sword") continue;
 				console.log(`Fetching Item "${item.cleanName}" (${item.key}) ...`);
-				const itemHtml = await getDqtJpText("item", item.code, skipReadCache, skipWriteCache);
+				const itemHtml = await getDqtJpHtml("item", item.code, skipReadCache, skipWriteCache);
 				const passives = itemHtml.match(/"\/passive\/\d+"/g) ?? [];
 				for (const passive of passives) {
 					const passiveCode = +((passive.match(/\d+/) ?? [])[0] ?? 0);
 					if (passiveCode) {
-						const passiveHtml = await getDqtJpText("passive", passiveCode, skipReadCache, skipWriteCache);
+						const passiveHtml = await getDqtJpHtml("passive", passiveCode, skipReadCache, skipWriteCache);
 						const skills = passiveHtml.match(/"\/skill\/\d+"/g) ?? [];
 						for (const skill of skills) {
 							const skillCode = +((skill.match(/\d+/) ?? [])[0] ?? 0);
-							const skillHtml = await getDqtJpText("skill", skillCode, skipReadCache, skipWriteCache);
+							const skillHtml = await getDqtJpHtml("skill", skillCode, skipReadCache, skipWriteCache);
 							const units = skillHtml.match(/"\/unit\/\d+"/g) ?? [];
 							const unitCodes = units.map(unit => unit.match(/\d+/)?.[0]).map(s => +(s??"")).filter(n => n);
 							item.units = unitCodes;
