@@ -3,5 +3,7 @@ data/bots
 data/cache
 dist
 types
+
 package-lock.json
+cache.zip
 .DS_Store

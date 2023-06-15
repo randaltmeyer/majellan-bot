@@ -2,24 +2,10 @@ import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { getAllUnits } from "./data/getAllUnits.mjs";
 import { readJson } from "./data/readJson.mjs";
 import { InfoBase, LANGS, Lang } from "./types.mjs";
-import { getDqtJpHtml, getDqtJpJs, getJson } from "./utils/HttpsUtils.mjs";
+import { getDqtJpHtml, getDqtJpJs, getDqtJpJson } from "./data/getDqtJpData.mjs";
 import { getAllItems } from "./data/getAllItems.mjs";
 
-async function fetchJson<T>(key: string, method: "GET" | "POST"): Promise<T | null> {
-	const url = getJsonUrl(key, method);
-	const payload = method === "POST" ? {} : undefined;
-	const json = await getJson(url, payload).catch(console.error);
-	if (json?.status) {
-		console.warn(`\t\t`+JSON.stringify(json));
-		return null;
-	}
-	return json ?? null;
-}
 
-function getJsonUrl(key: string, method: "GET" | "POST"): string {
-	const suffix = method === "GET" ? "/0" : "";
-	return `https://dqtjp.kusoge.xyz/${key}/q${suffix}`;
-}
 
 type LangJson = { lang:Lang; json:string; }
 async function fetchAndParseJs(key: string): Promise<LangJson[]> {
@@ -61,16 +47,14 @@ async function main() {
 		const fetches = readJson("fetches", "all") ?? [];
 		for (const fetch of fetches) {
 			if (fetch.listMethod) {
-				console.log(`Starting: ${fetch.label}`);
-
-				console.log(`\tfetching ...`);
+				console.log(`\tStarting: ${fetch.label}`);
 
 				if (fetch.listMethod === "JS") {
 					const langJsons = await fetchAndParseJs(fetch.listKey);
 					langJsons.forEach(langJson => writeFile(`../data/${fetch.listKey}/${langJson.lang}.json`, langJson.json));
 
 				}else {
-					const listJson = await fetchJson(fetch.listKey, fetch.listMethod).catch(console.error);
+					const listJson = await getDqtJpJson<[]>(fetch.listKey, fetch.listMethod).catch(console.error) ?? [];
 					writeFile(`../data/${fetch.listKey}/all.json`, listJson);
 
 					const nameLangJsons = await fetchAndParseJs(fetch.nameKey);
@@ -80,7 +64,7 @@ async function main() {
 					descLangJsons.forEach(langJson => writeFile(`../data/${fetch.listKey}/desc/${langJson.lang}.json`, langJson.json));
 				}
 
-				console.log(`Finished: ${fetch.label}`);
+				console.log(`\tFinished: ${fetch.label}`);
 			}
 		}
 		console.log("Doing Fetches ... done");
@@ -90,7 +74,7 @@ async function main() {
 		console.log("Updating Units ...");
 		const allUnits = getAllUnits();
 		for (const unit of allUnits) {
-			console.log(`Fetching Unit "${unit.cleanName}" ...`);
+			console.log(`\tFetching Unit "${unit.cleanName}" ...`);
 			const html = await getDqtJpHtml("unit", unit.code, skipReadCache, skipWriteCache);
 			const battleRoadSection = html.match(/Battle road\:<\/div>(.|\n)+<div class="ar">/)?.[0];
 			if (battleRoadSection) {
@@ -112,7 +96,7 @@ async function main() {
 		const allItems = getAllItems();
 		for (const item of allItems) {
 			if (item.key.includes("EquipmentProfile") && item.rankEquip?.name?.match(/\.[AS]$/)) {
-				console.log(`Fetching Item "${item.cleanName}" (${item.key}) ...`);
+				console.log(`\tFetching Item "${item.cleanName}" (${item.key}) ...`);
 				const itemHtml = await getDqtJpHtml("item", item.code, skipReadCache, skipWriteCache);
 				const passives = itemHtml.match(/"\/passive\/\d+"/g) ?? [];
 				for (const passive of passives) {
