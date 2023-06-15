@@ -1,5 +1,6 @@
 node_modules
 data/bots
+data/cache
 dist
 types
 package-lock.json

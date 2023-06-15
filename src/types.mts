@@ -92,7 +92,6 @@ export type UnitInfo = InfoBase & {
 
 	drops: DropInfo[];
 	battleRoads: InfoBase[];
-	weapon?: InfoBase;
 }
 
 export type ItemInfo = InfoBase & {

@@ -1,3 +1,4 @@
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
 import type { Override, RedirectScheme } from "follow-redirects";
 import followRedirects from "follow-redirects";
 import type * as coreHttp from "http";
@@ -97,6 +98,35 @@ export function getText<T = any>(url: string, postData?: T): Promise<string> {
 			}
 		}, reject);
 	});
+}
+
+export async function getDqtJpText(type: "item" | "passive" | "skill" | "unit", code: number, skipReadCache = false, skipWriteCache = false): Promise<string> {
+	const cacheDirPath = `../data/cache/${type}`;
+	const cacheFilePath = `${cacheDirPath}/${code}.html`;
+	if (!skipReadCache) {
+		try {
+			if (existsSync(cacheFilePath)) {
+				console.log(`\tReading cache: ${cacheFilePath}`);
+				const cacheHtml = readFileSync(cacheFilePath, "utf8");
+				if (cacheHtml) {
+					return cacheHtml
+				}
+			}
+		}catch(ex) {
+			console.error("Error reading cache: " + cacheFilePath);
+		}
+	}
+	const url = `https://dqtjp.kusoge.xyz/${type}/${code}`;
+	console.log(`\tReading url: ${url}`);
+	const html = await getText(url);
+	if (!html) {
+		console.warn(`\t\tNo HTML received!`);
+	}else if (!skipWriteCache) {
+		console.log(`\tWriting cache: ${cacheFilePath}`);
+		mkdirSync(cacheDirPath, { recursive:true });
+		writeFileSync(cacheFilePath, html);
+	}
+	return html;
 }
 
 /** Convenience wrapper for getText(url).then(text => JSON.parse(text)) */

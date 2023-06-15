@@ -2,6 +2,7 @@ import { EmbedBuilder } from "discord.js";
 import { DropInfo, UnitInfo } from "../../types.mjs";
 import { round } from "../../utils/round.mjs";
 import { findKeyOrValue } from "../../data/findKeyOrValue.mjs";
+import { getAllItems } from "../../data/getAllItems.mjs";
 
 function formatDropInfo(dropInfo: DropInfo): string {
 	const stageKey = dropInfo.stageSplit[1];
@@ -15,9 +16,9 @@ function formatDropInfo(dropInfo: DropInfo): string {
 }
 
 const EMOJI = {
-	characterBuilderOldOld: "<:998:1118620463527104532>",
-	characterBuilderOld: "<:999:1118621771852157008>",
-	characterBuilder: "<:997:1118676568408084491>",
+	// characterBuilder: "<:998:1118620463527104532>",
+	characterBuilder: "<:999:1118621771852157008>",
+	// characterBuilder: "<:997:1118676568408084491>",
 	talentBlossom: "<:000:1118597460101697556>",
 	beast: "<:001:1118599798149365811>",
 	demon: "<:002:1118599804843462747>",
@@ -59,6 +60,8 @@ export async function embedUnit(unit: UnitInfo): Promise<EmbedBuilder[]> {
 	const rarity = unit.rarity.name.split(".").pop()?.toLowerCase() as keyof typeof EMOJI;
 	const family = unit.family.name.split(".").pop()?.toLowerCase() as keyof typeof EMOJI;
 	const role = unit.role.name.split(".").pop()?.toLowerCase() as keyof typeof EMOJI;
+
+	const items = getAllItems().filter(item => item.units.includes(unit.code));
 	
 	// if (!EMOJI[rarity]) console.log(unit.rarity.name, EMOJI[rarity]);
 	// if (!EMOJI[family]) console.log(unit.family.name, EMOJI[family]);
@@ -68,6 +71,9 @@ export async function embedUnit(unit: UnitInfo): Promise<EmbedBuilder[]> {
 	if (unit.talent) content += " " + EMOJI.talentBlossom;
 	if (unit.sp) content += " " + EMOJI.characterBuilder;
 	content += `\n**Weight:** ${unit.weight}`;
+	if (items.length) {
+		content += `\nEquipment: ${items.map(item => item.cleanName).join(", ")}`;
+	}
 	embed.setDescription(content.trim());
 	if (unit.drops.length) {
 		embed.addFields({ name:"**Recruited From**", value:unit.drops.map(formatDropInfo).filter(s=>s).join("\n") });
