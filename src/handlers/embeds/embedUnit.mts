@@ -1,19 +1,5 @@
 import { EmbedBuilder } from "discord.js";
-import { DropInfo, UnitInfo } from "../../types.mjs";
-import { round } from "../../utils/round.mjs";
-import { findKeyOrValue } from "../../data/findKeyOrValue.mjs";
-import { getAllItems } from "../../data/getAllItems.mjs";
-
-function formatDropInfo(dropInfo: DropInfo): string {
-	const stageKey = dropInfo.stageSplit[1];
-	const stageName = findKeyOrValue(stageKey) ?? "";
-	if (!stageName) return "";
-	const shortName = stageName?.replace("Chapter ", "Ch").replace("Episode ", "Ep");
-	const avgStam = round(dropInfo.stamrate, 2);
-	const dropPercent = dropInfo.rate / 100;
-	const best = dropInfo.best ? " :tada:" : "";
-	return `${shortName} (${dropPercent}%; Avg Stam ${avgStam}) ${best}`;
-}
+import { UNRELEASED_SUPER, Unit } from "../../types.mjs";
 
 const EMOJI = {
 	// characterBuilder: "<:998:1118620463527104532>",
@@ -47,13 +33,13 @@ const EMOJI = {
 	supporter: "<:014:1118604466371956736>"
 };
 
-export async function embedUnit(unit: UnitInfo): Promise<EmbedBuilder[]> {
+export function embedUnit(unit: Unit): EmbedBuilder[] {
 	const embeds: EmbedBuilder[] = [];
 
 	const embed = new EmbedBuilder();
 	embeds.push(embed);
 	
-	embed.setTitle(`**${unit.cleanName}**`);
+	embed.setTitle(`**${unit.name}**`);
 	
 	embed.setThumbnail(`https://dqt.kusoge.xyz/img/icon/${unit.icon}`);
 
@@ -61,25 +47,26 @@ export async function embedUnit(unit: UnitInfo): Promise<EmbedBuilder[]> {
 	const family = unit.family.name.split(".").pop()?.toLowerCase() as keyof typeof EMOJI;
 	const role = unit.role.name.split(".").pop()?.toLowerCase() as keyof typeof EMOJI;
 
-	const items = getAllItems().filter(item => item.units.includes(unit.code));
-	
 	// if (!EMOJI[rarity]) console.log(unit.rarity.name, EMOJI[rarity]);
 	// if (!EMOJI[family]) console.log(unit.family.name, EMOJI[family]);
 	// if (!EMOJI[role]) console.log(unit.role.name, EMOJI[role]);
 
 	let content = `${EMOJI[rarity]} ${EMOJI[family]} ${EMOJI[role]}`;
-	if (unit.talent) content += " " + EMOJI.talentBlossom;
-	if (unit.sp) content += " " + EMOJI.characterBuilder;
+	if (unit.tBlossom) content += " " + EMOJI.talentBlossom;
+	if (unit.cBuilder) content += " " + EMOJI.characterBuilder;
 	content += `\n**Weight:** ${unit.weight}`;
-	if (items.length) {
-		content += `\n**Equipment**: ${items.map(item => item.cleanName).join(", ")}`;
+	if (unit.items.length) {
+		content += `\n**Equipment**: ${unit.items.join(", ")}`;
+	}
+	if (unit.notes.includes(UNRELEASED_SUPER)) {
+		content += `\n*unit is new/unreleased*`;
 	}
 	embed.setDescription(content.trim());
-	if (unit.drops.length) {
-		embed.addFields({ name:"**Recruited From**", value:unit.drops.map(formatDropInfo).filter(s=>s).join("\n") });
+	if (unit.farmQuests.length) {
+		embed.addFields({ name:"**Recruited From**", value:unit.farmQuests.join("\n") });
 	}
 	if (unit.battleRoads?.length) {
-		embed.addFields({ name:"**Battle Roads**", value:unit.battleRoads.map(br => br.name).join("\n") });
+		embed.addFields({ name:"**Battle Roads**", value:unit.battleRoads.join("\n") });
 	}
 	return embeds;
 }

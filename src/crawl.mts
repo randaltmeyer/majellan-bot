@@ -1,11 +1,17 @@
 import { existsSync, mkdirSync, writeFileSync } from "fs";
-import { getAllUnits } from "./data/getAllUnits.mjs";
 import { readJson } from "./data/readJson.mjs";
-import { InfoBase, LANGS, Lang } from "./types.mjs";
+import { BATTLE_ROAD_SUPER, DROP_SUPER, InfoBase, Item, LANGS, Lang, UNRELEASED_SUPER, Unit } from "./types.mjs";
 import { getDqtJpHtml, getDqtJpJs, getDqtJpJson } from "./data/getDqtJpData.mjs";
-import { getAllItems } from "./data/getAllItems.mjs";
 import { normalizeString } from "./utils/normalizeString.mjs";
+import { findKeyOrValue } from "./data/findKeyOrValue.mjs";
+import { findDropsByUnit } from "./data/findDropsByUnit.mjs";
+import { formatDropInfo } from "./data/formatDropInfo.mjs";
 
+const skipFetches = process.argv.includes("--skipFetches");
+const skipUnits = process.argv.includes("--skipUnits");
+const skipItems = process.argv.includes("--skipItems");
+const skipReadCache = process.argv.includes("--skipReadCache");
+const skipWriteCache = process.argv.includes("--skipWriteCache");
 
 
 type LangJson = { lang:Lang; json:string; }
@@ -35,14 +41,7 @@ function writeFile(path: string, content: any): void {
 	writeFileSync(path, payload);
 }
 
-async function main() {
-	console.log("Starting main()");
-	const skipFetches = process.argv.includes("--skipFetches");
-	const skipUnits = process.argv.includes("--skipUnits");
-	const skipItems = process.argv.includes("--skipItems");
-	const skipReadCache = process.argv.includes("--skipReadCache");
-	const skipWriteCache = process.argv.includes("--skipWriteCache");
-
+async function doFetches() {
 	if (!skipFetches) {
 		console.log("Doing fetches ...");
 		const fetches = readJson("fetches", "all") ?? [];
@@ -56,7 +55,7 @@ async function main() {
 
 				}else {
 					const listJson = await getDqtJpJson<[]>(fetch.listKey, fetch.listMethod).catch(console.error) ?? [];
-					writeFile(`../data/${fetch.listKey}/all.json`, listJson);
+					writeFile(`../data/${fetch.listKey}/raw.json`, listJson);
 
 					const nameLangJsons = await fetchAndParseJs(fetch.nameKey);
 					nameLangJsons.forEach(langJson => writeFile(`../data/${fetch.listKey}/name/${langJson.lang}.json`, langJson.json));
@@ -70,35 +69,34 @@ async function main() {
 		}
 		console.log("Doing Fetches ... done");
 	}
+}
 
-	if (!skipUnits) {
-		console.log("Updating Units ...");
-		const allUnits = getAllUnits();
-		for (const unit of allUnits) {
-			console.log(`\tFetching Unit "${unit.cleanName}" ...`);
-			const html = await getDqtJpHtml("unit", unit.code, skipReadCache, skipWriteCache);
-			const battleRoadSection = html.match(/Battle road\:<\/div>(.|\n)+<div class="ar">/)?.[0];
-			if (battleRoadSection) {
-				const battleRoadMatches = battleRoadSection.replace(/\s/g, " ").match(/<a\s+class="text"\s+href="\/event\/area\/(\d+)">(.*?)<\/a>/g);
-				if (battleRoadMatches?.length) {
-					unit.battleRoads = battleRoadMatches.map(aTag => {
-						const match = aTag.match(/<a\s+class="text"\s+href="\/event\/area\/(\d+)">(.*?)<\/a>/);
-						return match ? { code:+match[1], name:normalizeString(match[2]), icon:"" } : null;
-					}).filter(br => br) as InfoBase[];
-				}
-			}
-		}
-		writeFile(`../data/units/all.json`, allUnits);
-		console.log("Updating Units ... done");
-	}
-
+async function doItems() {
 	if (!skipItems) {
 		console.log("Updating Items ...");
-		const allItems = getAllItems();
-		for (const item of allItems) {
-			if (item.key.includes("EquipmentProfile") && item.rankEquip?.name?.match(/\.[AS]$/)) {
-				console.log(`\tFetching Item "${item.cleanName}" (${item.key}) ...`);
-				const itemHtml = await getDqtJpHtml("item", item.code, skipReadCache, skipWriteCache);
+		let item: Item;
+		const allItems: Item[] = [];
+		const allItemsRaw = readJson("items", "raw") ?? [];
+		for (const itemRaw of allItemsRaw) {
+			if (itemRaw.name.includes("EquipmentProfile") && itemRaw.rankEquip?.name?.match(/\.[AS]$/)) {
+				console.log(`\tFetching Item "${itemRaw.name}" ...`);
+
+				allItems.push(item = {
+					notes: "",
+					rankEquip: itemRaw.rankEquip,
+					units: [] as number[]
+				} as Item);
+
+				// name
+				const nameRaw = normalizeString(findKeyOrValue(itemRaw.name)) ?? itemRaw.name;
+				item.name = nameRaw.replace(/\*/g, "");
+
+				item.description = normalizeString(findKeyOrValue(itemRaw.description)) ?? itemRaw.description;
+
+				// notes
+				if (nameRaw.includes("*")) item.notes += UNRELEASED_SUPER;
+
+				const itemHtml = await getDqtJpHtml("item", itemRaw.code, skipReadCache, skipWriteCache);
 				const passives = itemHtml.match(/"\/passive\/\d+"/g) ?? [];
 				for (const passive of passives) {
 					const passiveCode = +((passive.match(/\d+/) ?? [])[0] ?? 0);
@@ -119,6 +117,73 @@ async function main() {
 		writeFile(`../data/items/all.json`, allItems);
 		console.log("Updating Items ... done");
 	}
+}
+
+async function doUnits() {
+	if (!skipUnits) {
+		console.log("Updating Units ...");
+		let unit: Unit;
+		const allUnits: Unit[] = [];
+		const allUnitsRaw = readJson("units", "raw") ?? [];
+		for (const unitRaw of allUnitsRaw) {
+			console.log(`\tFetching Unit "${unitRaw.name}" ...`);
+
+			allUnits.push(unit = {
+				notes: "",
+				icon: unitRaw.icon,
+				family: unitRaw.family,
+				role: unitRaw.role,
+				rarity: unitRaw.rarity,
+				weight: unitRaw.weight,
+				tBlossom: !!unitRaw.talent,
+				cBuilder: !!unitRaw.sp,
+				farmQuests: [] as string[],
+				battleRoads: [] as string[]
+			} as Unit);
+
+			// name
+			const nameRaw = normalizeString(findKeyOrValue(unitRaw.name)) ?? unitRaw.name;
+			unit.name = nameRaw.replace(/\*/g, "");
+
+			// notes
+			if (nameRaw.includes("*")) unit.notes += UNRELEASED_SUPER;
+
+			// drops
+			unit.farmQuests = findDropsByUnit(unitRaw.name).map(formatDropInfo).filter(s => s);
+			if (unit.farmQuests.length) unit.notes += DROP_SUPER;
+
+			// battle roads
+			const html = await getDqtJpHtml("unit", unitRaw.code, skipReadCache, skipWriteCache);
+			const battleRoadSection = html.match(/Battle road\:<\/div>(.|\n)+<div class="ar">/)?.[0];
+			if (battleRoadSection) {
+				const battleRoadMatches = battleRoadSection.replace(/\s/g, " ").match(/<a\s+class="text"\s+href="\/event\/area\/(\d+)">(.*?)<\/a>/g);
+				if (battleRoadMatches?.length) {
+					const battleRoads = battleRoadMatches.map(aTag => {
+						const match = aTag.match(/<a\s+class="text"\s+href="\/event\/area\/(\d+)">(.*?)<\/a>/);
+						return match ? { code:+match[1], name:normalizeString(match[2]), icon:"" } : null;
+					}).filter(br => br) as InfoBase[];
+					unit.battleRoads = battleRoads.map(br => br.name).filter(s => s);
+				}
+			}
+			if (unit.battleRoads.length) unit.notes += BATTLE_ROAD_SUPER;
+
+			// items
+			const items = readJson("items", "all") ?? [];
+			unit.items = items.filter(item => item.units.includes(unitRaw.code)).map(item => item.name + item.notes);
+		}
+		writeFile(`../data/units/all.json`, allUnits);
+		console.log("Updating Units ... done");
+	}
+}
+
+async function main() {
+	console.log("Starting main()");
+
+	await doFetches();
+
+	await doItems();
+
+	await doUnits();
 
 	console.log("Finished main()");
 }

@@ -1,8 +1,9 @@
 import { Channel, CrosspostedChannel, Message, userMention } from "discord.js";
 import { findUnits } from "../data/findUnits.mjs";
 import { BATTLE_ROAD_SUPER, DROP_SUPER, Optional, UNRELEASED_SUPER } from "../types.mjs";
-import { embedUnit } from "./embeds/embedUnit.mjs";
 import { canRespond } from "../utils/canRespond.mjs";
+import { embedPartialUnits } from "./embeds/embedPartialUnits.mjs";
+import { embedUnit } from "./embeds/embedUnit.mjs";
 
 function getChannelName(channel: Channel | CrosspostedChannel): string | null {
 	if ("name" in channel) return channel.name;
@@ -42,12 +43,17 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 		const units = findUnits(content);
 		if (units.byName) {
 			const content = `Hello, I found this unit:`;
-			const embeds = await embedUnit(units.byName);
+			const embeds = embedUnit(units.byName);
+			if (units.also.length) {
+				embeds.push(...embedPartialUnits(units.also));
+			}
 			message.reply({ content, embeds });
+
 		}else if (units.closest) {
 			const content = `Hello, this is the closest unit I could find:`;
-			const embeds = await embedUnit(units.closest);
+			const embeds = embedUnit(units.closest);
 			message.reply({ content, embeds });
+
 		}else {
 			const sorry = `Sorry, I couldn't find a unit using:\n> ${content}`;
 			let but = "";
@@ -57,10 +63,10 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 			const byL = units.byLevenshtein.length;
 			if (byP || byL) {
 				if (byP) {
-					const names = units.byPartialName.map(unit => unit.notedName);
+					const names = units.byPartialName.map(unit => unit.name + unit.notes);
 					but = `\n\nI did find partial match(es):\n> ${names.join(", ")}`;
 				}else {
-					const names = units.byLevenshtein.map(unit => unit.notedName);
+					const names = units.byLevenshtein.map(unit => unit.name + unit.notes);
 					but = `\n\nI did find similar name(s):\n> ${names.join(", ")}`;
 				}
 				const unreleased = but.includes(UNRELEASED_SUPER),

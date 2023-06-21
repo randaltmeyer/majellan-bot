@@ -1,24 +1,11 @@
-import { ItemInfo } from "../types.mjs";
-import { UNRELEASED_SUPER } from "../types.mjs";
-import { normalizeString } from "../utils/normalizeString.mjs";
+import { Item } from "../types.mjs";
 import { readJson } from "./readJson.mjs";
-import { findKeyOrValue } from "./findKeyOrValue.mjs";
 
-const _allItems: ItemInfo[] = [];
+const _allItems: Item[] = [];
 
-export function getAllItems(): ItemInfo[] {
+export function getAllItems(): Item[] {
 	if (!_allItems.length) {
-		const allItems = readJson("items", "all") ?? [];
-		allItems.forEach(item => {
-			if (!item.key) {
-				item.key = item.name;
-				item.name = normalizeString(findKeyOrValue(item.key)) ?? item.key;
-				item.cleanName = item.name.replace(/\*/, "");
-				item.notedName = item.name.replace(/\*/, UNRELEASED_SUPER);
-				item.units = [];
-			}
-			_allItems.push(item);
-		});
+		_allItems.push(...(readJson("items", "all") ?? []));
 	}
 	return _allItems;
 }

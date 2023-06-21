@@ -1,5 +1,5 @@
 import { readFileSync } from "fs";
-import { BotInfo, DropInfo, Fetch, InfoBase, ItemInfo, Lang, StringStringMap, UnitInfo } from "../types.mjs";
+import { BotInfo, DropInfo, Fetch, InfoBase, Item, ItemInfo, Lang, StringStringMap, Unit, UnitInfo } from "../types.mjs";
 
 export function readJson(type: "bots", file: "dev"): BotInfo | null;
 
@@ -7,14 +7,18 @@ export function readJson(type: "units/name", file: Lang): StringStringMap | null
 export function readJson(type: "items/name", file: Lang): StringStringMap | null;
 export function readJson(type: "stage", file: Lang): StringStringMap | null;
 
-export function readJson(type: "ailments", file: "all"): InfoBase[] | null;
-export function readJson(type: "buffs", file: "all"): InfoBase[] | null;
 export function readJson(type: "fetches", file: "all"): Fetch[] | null;
-export function readJson(type: "items", file: "all"): ItemInfo[] | null;
-export function readJson(type: "passives", file: "all"): InfoBase[] | null;
-export function readJson(type: "skills", file: "all"): InfoBase[] | null;
-export function readJson(type: "unitdrop", file: "all"): DropInfo[] | null;
-export function readJson(type: "units", file: "all"): UnitInfo[] | null;
+
+export function readJson(type: "ailments", file: "raw"): InfoBase[] | null;
+export function readJson(type: "buffs", file: "raw"): InfoBase[] | null;
+export function readJson(type: "items", file: "raw"): ItemInfo[] | null;
+export function readJson(type: "passives", file: "raw"): InfoBase[] | null;
+export function readJson(type: "skills", file: "raw"): InfoBase[] | null;
+export function readJson(type: "unitdrop", file: "raw"): DropInfo[] | null;
+export function readJson(type: "units", file: "raw"): UnitInfo[] | null;
+
+export function readJson(type: "units", file: "all"): Unit[] | null;
+export function readJson(type: "items", file: "all"): Item[] | null;
 
 export function readJson<T>(type: string, file: string): T | null {
 	const path = `../data/${type}/${file}.json`;

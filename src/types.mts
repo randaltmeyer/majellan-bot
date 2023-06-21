@@ -72,13 +72,6 @@ export type UnitPassiveInfo = InfoBase & {
 };
 
 export type UnitInfo = InfoBase & {
-	/** The unique identifier originally stored in the name field when fetched. */
-	key: string;
-	/** Name with no notes. */
-	cleanName: string;
-	/** Name with notes about unreleased or recruitable or battle road */
-	notedName: string;
-
 	family: InfoBase;
 	role: InfoBase;
 	rarity: InfoBase;
@@ -94,15 +87,41 @@ export type UnitInfo = InfoBase & {
 	battleRoads: InfoBase[];
 }
 
-export type ItemInfo = InfoBase & {
-	/** The unique identifier originally stored in the name field when fetched. */
-	key: string;
-	/** Name with no notes. */
-	cleanName: string;
-	notedName: string;
+export type Unit = {
+	name: string;
+	icon: string;
+	notes: string;
 
-	/** unique identifier originally stored in the description field when fetched. */
-	descKey: string;
+	family: InfoBase;
+	role: InfoBase;
+	rarity: InfoBase;
+	weight: number;
+
+	tBlossom: boolean;
+	cBuilder: boolean;
+
+	farmQuests: string[];
+	battleRoads: string[];
+
+	items: string[];
+}
+
+export type Item = {
+	name: string;
+	notes: string;
+	description: string;
+	rankEquip: InfoBase & {
+		/** image filename */
+		background: string;
+		/** image filename */
+		frame: string;
+		/** image filename */
+		material: string;
+	};
+	units: number[];
+}
+
+export type ItemInfo = InfoBase & {
 	description: string;
 
 	max: number;
@@ -120,9 +139,6 @@ export type ItemInfo = InfoBase & {
 	subtype: number;
 	/** nameKey + "\n" + descKey */
 	zzz: string;
-
-	/** unit.code */
-	units: number[];
 }
 
 export type Nullable<T> = T | null;

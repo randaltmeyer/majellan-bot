@@ -5,7 +5,7 @@ const _allDropInfo: DropInfo[] = [];
 
 function getAllDropInfo(): DropInfo[] {
 	if (!_allDropInfo.length) {
-		const allDropInfo = readJson("unitdrop", "all") ?? [];
+		const allDropInfo = readJson("unitdrop", "raw") ?? [];
 		_allDropInfo.push(...allDropInfo);
 	}
 	return _allDropInfo;
