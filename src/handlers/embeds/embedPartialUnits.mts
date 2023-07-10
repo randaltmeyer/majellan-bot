@@ -1,5 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import { BATTLE_ROAD_SUPER, DROP_SUPER, UNRELEASED_SUPER, Unit } from "../../types.mjs";
+import { isDevMode } from "../../utils/isDevMode.mjs";
 
 export function embedPartialUnits(units: Unit[]): EmbedBuilder[] {
 	const embeds: EmbedBuilder[] = [];
@@ -22,6 +23,10 @@ export function embedPartialUnits(units: Unit[]): EmbedBuilder[] {
 		if (hasBattleRoads) notes += `\n*${BATTLE_ROAD_SUPER} battle roads*`;
 	}
 	embed.setDescription(also + notes);
+
+	if (isDevMode()) {
+		embed.setFooter({ text:"*dev mode*" });
+	}
 
 	return embeds;
 }
