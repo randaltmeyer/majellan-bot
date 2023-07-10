@@ -33,7 +33,7 @@ const EMOJI = {
 	supporter: "<:014:1118604466371956736>"
 };
 
-export function embedUnit(unit: Unit): EmbedBuilder[] {
+export function embedUnit(unit: Unit, almanac = false): EmbedBuilder[] {
 	const embeds: EmbedBuilder[] = [];
 
 	const embed = new EmbedBuilder();
@@ -62,11 +62,13 @@ export function embedUnit(unit: Unit): EmbedBuilder[] {
 		content += `\n*unit is new/unreleased*`;
 	}
 	embed.setDescription(content.trim());
-	if (unit.farmQuests.length) {
-		embed.addFields({ name:"**Recruited From**", value:unit.farmQuests.join("\n") });
-	}
-	if (unit.battleRoads?.length) {
-		embed.addFields({ name:"**Battle Roads**", value:unit.battleRoads.join("\n") });
+	if (!almanac) {
+		if (unit.farmQuests.length) {
+			embed.addFields({ name:"**Recruited From**", value:unit.farmQuests.join("\n") });
+		}
+		if (unit.battleRoads?.length) {
+			embed.addFields({ name:"**Battle Roads**", value:unit.battleRoads.join("\n") });
+		}
 	}
 	return embeds;
 }
