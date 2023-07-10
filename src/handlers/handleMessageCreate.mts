@@ -60,15 +60,10 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 			let notes = "";
 
 			const byP = units.byPartialName.length;
-			const byL = units.byLevenshtein.length;
-			if (byP || byL) {
-				if (byP) {
-					const names = units.byPartialName.map(unit => unit.name + unit.notes);
-					but = `\n\nI did find partial match(es):\n> ${names.join(", ")}`;
-				}else {
-					const names = units.byLevenshtein.map(unit => unit.name + unit.notes);
-					but = `\n\nI did find similar name(s):\n> ${names.join(", ")}`;
-				}
+			if (byP) {
+				const names = units.byPartialName.map(unit => unit.name + unit.notes);
+				but = `\n\nI did find partial match(es):\n> ${names.join(", ")}`;
+
 				const unreleased = but.includes(UNRELEASED_SUPER),
 					hasDrops = but.includes(DROP_SUPER),
 					hasBattleRoads = but.includes(BATTLE_ROAD_SUPER);
