@@ -1,5 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import { UNRELEASED_SUPER, Unit } from "../../types.mjs";
+import { isDevMode } from "../../utils/isDevMode.mjs";
 
 const EMOJI = {
 	// characterBuilder: "<:998:1118620463527104532>",
@@ -69,6 +70,9 @@ export function embedUnit(unit: Unit, almanac = false): EmbedBuilder[] {
 		if (unit.battleRoads?.length) {
 			embed.addFields({ name:"**Battle Roads**", value:unit.battleRoads.join("\n") });
 		}
+	}
+	if (isDevMode()) {
+		embed.setFooter({ text:"*dev mode*" });
 	}
 	return embeds;
 }
