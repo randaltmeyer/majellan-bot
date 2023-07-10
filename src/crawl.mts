@@ -129,6 +129,7 @@ async function doUnits() {
 			console.log(`\tFetching Unit "${unitRaw.name}" ...`);
 
 			allUnits.push(unit = {
+				code: unitRaw.code,
 				notes: "",
 				icon: unitRaw.icon,
 				family: unitRaw.family,

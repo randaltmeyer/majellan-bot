@@ -88,6 +88,7 @@ export type UnitInfo = InfoBase & {
 }
 
 export type Unit = {
+	code: number;
 	name: string;
 	icon: string;
 	notes: string;
