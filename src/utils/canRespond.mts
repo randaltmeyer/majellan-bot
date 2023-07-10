@@ -14,7 +14,8 @@ export function canRespond(messageOrInteraction: Message | Interaction): boolean
 		}
 	}
 	if ("mentions" in messageOrInteraction) {
-		return messageOrInteraction.mentions.has(BOT_ID);
+		return messageOrInteraction.mentions.has(BOT_ID)
+			&& !messageOrInteraction.mentions.everyone;
 	}
 	return true;
 }
