@@ -1,7 +1,9 @@
-node_modules
 data/bots
 data/cache
+deploy
 dist
+logs
+node_modules
 types
 
 package-lock.json

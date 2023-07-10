@@ -4,9 +4,7 @@
 		"alwaysStrict": true,
 		"allowSyntheticDefaultImports": true,
 
-		"declaration": true,
-		"declarationDir": "./types",
-		"declarationMap": true,
+		"declaration": false,
 
 		// "esModuleInterop": true,
 
@@ -34,7 +32,7 @@
 		"removeComments": true,
 		"rootDir": "./src",
 
-		"sourceMap": true,
+		"sourceMap": false,
 		"strict": true,
 		"strictBindCallApply": true,
 		"strictFunctionTypes": true,
