@@ -1,4 +1,4 @@
-import { readFileSync } from "fs";
+import { readFileSync, existsSync } from "fs";
 import { BotInfo, DropInfo, Fetch, InfoBase, Item, ItemInfo, Lang, StringStringMap, Unit, UnitInfo } from "../types.mjs";
 
 export function readJson(type: "bots", file: "dev"): BotInfo | null;
@@ -21,7 +21,10 @@ export function readJson(type: "units", file: "all"): Unit[] | null;
 export function readJson(type: "items", file: "all"): Item[] | null;
 
 export function readJson<T>(type: string, file: string): T | null {
-	const path = `../data/${type}/${file}.json`;
+	let path = `./data/${type}/${file}.json`;
+	if (!existsSync(path)) {
+		path = "." + path;
+	}
 	const contents = readFileSync(path, "utf8");
 	try { return JSON.parse(contents); }catch(ex) { console.error(ex); }
 	return null;
