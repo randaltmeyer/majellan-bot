@@ -163,7 +163,6 @@ async function doUnits() {
 			const items = readJson("items", "all") ?? [];
 			unit.items = items.filter(item => item.units.includes(unitRaw.code)).map(item => item.name + item.notes);
 		}
-		allUnits.sort((a, b) => a.code < b.code ? -1 : 1);
 		writeJson("units", "all", allUnits);
 		console.log("Updating Units ... done");
 	}
