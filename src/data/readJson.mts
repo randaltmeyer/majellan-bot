@@ -24,8 +24,7 @@ export function readJson(type: "units", file: "all"): Unit[] | null;
 export function readJson(type: "items", file: "all"): Item[] | null;
 
 export function readJson<T>(type: string, file: string): T | null {
-	const dataPath = getDataPath();
-	const path = `${dataPath}/${type}/${file}.json`;
+	const path = getDataPath(`${type}/${file}.json`);
 	const contents = readFileSync(path, "utf8");
 	try { return JSON.parse(contents); }catch(ex) { console.error(ex); }
 	return null;
