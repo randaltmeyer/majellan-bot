@@ -1,4 +1,4 @@
-import { readFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { BotInfo, DropInfo, Fetch, InfoBase, Item, ItemInfo, Lang, StringStringMap, Unit, UnitInfo } from "../types.mjs";
 import { AlliesAlmanacCore } from "./AlliesAlmanac.mjs";
 import { getDataPath } from "./getDataPath.mjs";
@@ -24,8 +24,14 @@ export function readJson(type: "units", file: "all"): Unit[] | null;
 export function readJson(type: "items", file: "all"): Item[] | null;
 
 export function readJson<T>(type: string, file: string): T | null {
-	const path = getDataPath(`${type}/${file}.json`);
-	const contents = readFileSync(path, "utf8");
-	try { return JSON.parse(contents); }catch(ex) { console.error(ex); }
+	try {
+		const path = getDataPath(`${type}/${file}.json`);
+		if (existsSync(path)) {
+			const contents = readFileSync(path, "utf8");
+			return JSON.parse(contents);
+		}
+	}catch(ex) {
+		console.error(ex);
+	}
 	return null;
 }
