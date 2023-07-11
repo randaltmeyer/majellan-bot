@@ -12,9 +12,9 @@ const skipUnits = process.argv.includes("--skipUnits");
 const skipItems = process.argv.includes("--skipItems");
 const skipReadCache = process.argv.includes("--skipReadCache");
 const skipWriteCache = process.argv.includes("--skipWriteCache");
-const updateFetches = process.argv.includes("--updateFetches");
-const updateNewUnits = process.argv.includes("--updateNewUnits");
-const updateNewItems = process.argv.includes("--updateNewItems");
+const updateFetches = process.argv.includes("--updateFetches") || process.argv.includes("--update");
+const updateNewUnits = process.argv.includes("--updateNewUnits") || process.argv.includes("--update");
+const updateNewItems = process.argv.includes("--updateNewItems") || process.argv.includes("--update");
 
 type LangJson = { lang:Lang; json:string; }
 async function fetchAndParseJs(key: string): Promise<LangJson[]> {
