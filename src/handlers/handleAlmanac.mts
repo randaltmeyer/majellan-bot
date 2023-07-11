@@ -61,17 +61,21 @@ async function createPayload(userId: string) {
 	const unitIndex = units.indexOf(unit);
 	const unitEntry = almanac.getUnit(unitCode);
 
+	// const unownedFarmableUnits = units.filter(unit => unit.farmQuests.length && !almanac.hasUnit(unit.code));
+
 	const content = `**Allies Almanac:** ${userMention(userId)}`;
 	const components = formUnit(userId, unitEntry);
 	const embeds = embedUnit(unit, true);
 
-	const embed = new EmbedBuilder();
-	embed.setDescription(`
+	embeds.push(new EmbedBuilder().setDescription(`
 		**Unit:** ${unitIndex + 1} of ${units.length}
 		**Owned:** ${unitEntry.has ? "Yes" : "No"}
+	`));
+
+	embeds.push(new EmbedBuilder().setDescription(`
 		**Total Owned:** ${almanac.count} of ${units.length} (${round(100 * almanac.count / units.length)}%)
-	`);
-	embeds.push(embed);
+		`));
+		// **Unowned Farmable Units:** (${unownedFarmableUnits.length}); ${unownedFarmableUnits.map(unit => unit.name).join(", ")}
 
 	return {
 		content,
