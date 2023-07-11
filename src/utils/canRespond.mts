@@ -17,5 +17,8 @@ export function canRespond(messageOrInteraction: Message | Interaction): boolean
 		return messageOrInteraction.mentions.has(BOT_ID)
 			&& !messageOrInteraction.mentions.everyone;
 	}
+	if ("customId" in messageOrInteraction) {
+		return messageOrInteraction.customId.startsWith(`dqt|almanac|${messageOrInteraction.user.id}`);
+	}
 	return true;
 }
