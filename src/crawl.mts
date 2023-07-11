@@ -12,13 +12,15 @@ const skipUnits = process.argv.includes("--skipUnits");
 const skipItems = process.argv.includes("--skipItems");
 const skipReadCache = process.argv.includes("--skipReadCache");
 const skipWriteCache = process.argv.includes("--skipWriteCache");
-
+const updateFetches = process.argv.includes("--updateFetches");
+const updateNewUnits = process.argv.includes("--updateNewUnits");
+const updateNewItems = process.argv.includes("--updateNewItems");
 
 type LangJson = { lang:Lang; json:string; }
 async function fetchAndParseJs(key: string): Promise<LangJson[]> {
 	const langJson = [];
 	if (key) {
-		const js = await getDqtJpJs(key);
+		const js = await getDqtJpJs(key, updateFetches);
 		if (js) {
 			for (const lang of LANGS) {
 				const match = js.match(new RegExp(`var ${key}_${lang} = (\{(?:.|\n)*?\});`)) ?? [];
@@ -87,7 +89,8 @@ async function doItems() {
 				// notes
 				if (nameRaw.includes("*")) item.notes += UNRELEASED_SUPER;
 
-				const itemHtml = await getDqtJpHtml("item", itemRaw.code, skipReadCache, skipWriteCache);
+			const skipNewItemCache = updateNewItems && nameRaw.includes("*");
+			const itemHtml = await getDqtJpHtml("item", itemRaw.code, skipReadCache || skipNewItemCache, skipWriteCache);
 				const passives = itemHtml.match(/"\/passive\/\d+"/g) ?? [];
 				for (const passive of passives) {
 					const passiveCode = +((passive.match(/\d+/) ?? [])[0] ?? 0);
@@ -145,7 +148,8 @@ async function doUnits() {
 			if (unit.farmQuests.length) unit.notes += DROP_SUPER;
 
 			// battle roads
-			const html = await getDqtJpHtml("unit", unitRaw.code, skipReadCache, skipWriteCache);
+			const skipNewUnitCache = updateNewUnits && nameRaw.includes("*");
+			const html = await getDqtJpHtml("unit", unitRaw.code, skipReadCache || skipNewUnitCache, skipWriteCache);
 			const battleRoadSection = html.match(/Battle road\:<\/div>(.|\n)+<div class="ar">/)?.[0];
 			if (battleRoadSection) {
 				const battleRoadMatches = battleRoadSection.replace(/\s/g, " ").match(/<a\s+class="text"\s+href="\/event\/area\/(\d+)">(.*?)<\/a>/g);
