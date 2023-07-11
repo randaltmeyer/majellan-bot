@@ -1,11 +1,11 @@
-import { existsSync, mkdirSync, writeFileSync } from "fs";
+import { findDropsByUnit } from "./data/findDropsByUnit.mjs";
+import { findKeyOrValue } from "./data/findKeyOrValue.mjs";
+import { formatDropInfo } from "./data/formatDropInfo.mjs";
+import { getDqtJpHtml, getDqtJpJs, getDqtJpJson } from "./data/getDqtJpData.mjs";
 import { readJson } from "./data/readJson.mjs";
 import { BATTLE_ROAD_SUPER, DROP_SUPER, InfoBase, Item, LANGS, Lang, UNRELEASED_SUPER, Unit } from "./types.mjs";
-import { getDqtJpHtml, getDqtJpJs, getDqtJpJson } from "./data/getDqtJpData.mjs";
 import { normalizeString } from "./utils/normalizeString.mjs";
-import { findKeyOrValue } from "./data/findKeyOrValue.mjs";
-import { findDropsByUnit } from "./data/findDropsByUnit.mjs";
-import { formatDropInfo } from "./data/formatDropInfo.mjs";
+import { writeJson } from "./data/writeJson.mjs";
 
 const skipFetches = process.argv.includes("--skipFetches");
 const skipUnits = process.argv.includes("--skipUnits");
@@ -32,15 +32,6 @@ async function fetchAndParseJs(key: string): Promise<LangJson[]> {
 	return langJson;
 }
 
-function writeFile(path: string, content: any): void {
-	const dir = path.split("/").slice(0, -1).join("/");
-	if (!existsSync(dir)) {
-		mkdirSync(dir);
-	}
-	const payload = typeof(content) === "string" ? content : JSON.stringify(content);
-	writeFileSync(path, payload);
-}
-
 async function doFetches() {
 	if (!skipFetches) {
 		console.log("Doing fetches ...");
@@ -51,17 +42,17 @@ async function doFetches() {
 
 				if (fetch.listMethod === "JS") {
 					const langJsons = await fetchAndParseJs(fetch.listKey);
-					langJsons.forEach(langJson => writeFile(`../data/${fetch.listKey}/${langJson.lang}.json`, langJson.json));
+					langJsons.forEach(langJson => writeJson(fetch.listKey, langJson.lang, langJson.json));
 
 				}else {
 					const listJson = await getDqtJpJson<[]>(fetch.listKey, fetch.listMethod).catch(console.error) ?? [];
-					writeFile(`../data/${fetch.listKey}/raw.json`, listJson);
+					writeJson(fetch.listKey, "raw", listJson);
 
 					const nameLangJsons = await fetchAndParseJs(fetch.nameKey);
-					nameLangJsons.forEach(langJson => writeFile(`../data/${fetch.listKey}/name/${langJson.lang}.json`, langJson.json));
+					nameLangJsons.forEach(langJson => writeJson(`${fetch.listKey}/name`, langJson.lang, langJson.json));
 
 					const descLangJsons = await fetchAndParseJs(fetch.descKey);
-					descLangJsons.forEach(langJson => writeFile(`../data/${fetch.listKey}/desc/${langJson.lang}.json`, langJson.json));
+					descLangJsons.forEach(langJson => writeJson(`${fetch.listKey}/desc`, langJson.lang, langJson.json));
 				}
 
 				console.log(`\tFinished: ${fetch.label}`);
@@ -114,7 +105,7 @@ async function doItems() {
 				}
 			}
 		}
-		writeFile(`../data/items/all.json`, allItems);
+		writeJson(`items`, `all`, allItems);
 		console.log("Updating Items ... done");
 	}
 }
@@ -172,7 +163,8 @@ async function doUnits() {
 			const items = readJson("items", "all") ?? [];
 			unit.items = items.filter(item => item.units.includes(unitRaw.code)).map(item => item.name + item.notes);
 		}
-		writeFile(`../data/units/all.json`, allUnits);
+		allUnits.sort((a, b) => a.code < b.code ? -1 : 1);
+		writeJson("units", "all", allUnits);
 		console.log("Updating Units ... done");
 	}
 }
