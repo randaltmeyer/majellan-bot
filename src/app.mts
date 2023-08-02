@@ -16,7 +16,12 @@ const client = new Client(clientOptions);
 client.once("ready", handleReady);
 client.on("interactionCreate", handleInteractionCreate);
 client.on("messageCreate", handleMessageCreate);
-client.login(readJson("bots", "dev")?.token ?? "");
 
-// node app.mjs
-// pm2 start app.mjs --name dqt-sage
+const botName = process.env["botName"] as "dev" | "prod";
+const token = readJson("bots", botName)?.token;
+if (token) {
+	console.log(`Loading bot: ${botName}`);
+	client.login(token).catch(console.error);
+}else {
+	console.error(`Invalid Token for: ${botName}`);
+}

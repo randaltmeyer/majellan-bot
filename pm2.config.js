@@ -5,9 +5,11 @@ module.exports = {
 
 		env: {
 			NODE_ENV: "development",
+			botName: "dev"
 		},
 		env_production: {
-			NODE_ENV: "production"
+			NODE_ENV: "production",
+			botName: "prod"
 		},
 
 		error_file: "./logs/dqt-sage-error.log",

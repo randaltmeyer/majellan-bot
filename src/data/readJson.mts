@@ -4,7 +4,7 @@ import { AlliesAlmanacCore } from "./AlliesAlmanac.mjs";
 import { getDataPath } from "./getDataPath.mjs";
 
 export function readJson(type: "almanacs", file: string): AlliesAlmanacCore | null;
-export function readJson(type: "bots", file: "dev"): BotInfo | null;
+export function readJson(type: "bots", file: "dev" | "prod"): BotInfo | null;
 
 export function readJson(type: "units/name", file: Lang): StringStringMap | null;
 export function readJson(type: "items/name", file: Lang): StringStringMap | null;
