@@ -1,6 +1,6 @@
 module.exports = {
 	apps: [{
-		name: "dqt-sage",
+		name: "majellan-bot",
 		script: "./dist/app.mjs",
 
 		env: {
@@ -12,8 +12,8 @@ module.exports = {
 			botName: "prod"
 		},
 
-		error_file: "./logs/dqt-sage-error.log",
-		out_file: "./logs/dqt-sage-out.log",
+		error_file: "./logs/majellan-bot-error.log",
+		out_file: "./logs/majellan-bot-out.log",
 		log_date_format: "YYYY-MM-DD",
 		time: true,
 
