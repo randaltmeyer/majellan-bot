@@ -1,7 +1,14 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
 import followRedirects from "follow-redirects";
 
-function getText<T = any>(url: string, postData?: T): Promise<string> {
+let pauseMs = 0;
+export function setPauseMs(ms: number) { pauseMs = ms; }
+
+async function pause(): Promise<void> {
+	if (pauseMs) return new Promise(res => setTimeout(res, pauseMs));
+}
+
+async function getText<T = any>(url: string, postData?: T): Promise<string> {
 	if (typeof(url) !== "string") {
 		return Promise.reject("Invalid Url");
 	}
@@ -11,6 +18,7 @@ function getText<T = any>(url: string, postData?: T): Promise<string> {
 	const protocol = url.match(/^http:\/\//i) ? followRedirects.http : followRedirects.https;
 	const method = postData ? "request" : "get";
 	const payload = postData ? JSON.stringify(postData) : null;
+	await pause();
 	return new Promise((resolve, reject) => {
 		try {
 			const options = payload ? {

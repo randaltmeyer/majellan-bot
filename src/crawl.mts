@@ -1,7 +1,7 @@
 import { findDropsByUnit } from "./data/findDropsByUnit.mjs";
 import { findKeyOrValue } from "./data/findKeyOrValue.mjs";
 import { formatDropInfo } from "./data/formatDropInfo.mjs";
-import { getDqtJpHtml, getDqtJpJs, getDqtJpJson } from "./data/getDqtJpData.mjs";
+import { getDqtJpHtml, getDqtJpJs, getDqtJpJson, setPauseMs } from "./data/getDqtJpData.mjs";
 import { readJson } from "./data/readJson.mjs";
 import { BATTLE_ROAD_SUPER, DROP_SUPER, InfoBase, Item, LANGS, Lang, UNRELEASED_SUPER, Unit } from "./types.mjs";
 import { normalizeString } from "./utils/normalizeString.mjs";
@@ -15,6 +15,7 @@ const skipWriteCache = process.argv.includes("--skipWriteCache");
 const updateFetches = process.argv.includes("--updateFetches") || process.argv.includes("--update");
 const updateNewUnits = process.argv.includes("--updateNewUnits") || process.argv.includes("--update");
 const updateNewItems = process.argv.includes("--updateNewItems") || process.argv.includes("--update");
+const pauseMs = +process.argv.find(arg => arg.match(/--pauseMS=\d+/i))?.split("=").pop()!;
 
 type LangJson = { lang:Lang; json:string; }
 async function fetchAndParseJs(key: string): Promise<LangJson[]> {
@@ -174,6 +175,8 @@ async function doUnits() {
 
 async function main() {
 	console.log("Starting main()");
+
+	setPauseMs(pauseMs);
 
 	await doFetches();
 
