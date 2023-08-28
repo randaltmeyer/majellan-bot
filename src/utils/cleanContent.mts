@@ -17,10 +17,10 @@ export function cleanContent(message: Message): string {
 	message.mentions.users.forEach(user => scrub("@", user.username));
 	message.mentions.channels.forEach(channel => scrub("#", getChannelName(channel)));
 	message.mentions.crosspostedChannels.forEach(channel => scrub("#", getChannelName(channel)));
-	return content;
+	content = content.replace(/:\w+:/g, "");
+	return content.replace(/\s+/g, " ").trim();
 
 	function scrub(prefix: "@" | "#", ...names: (Optional<string>)[]) {
 		names.filter(s => s).forEach(name => content = content.replace(`${prefix}${name}`, ""));
-		content = content.replace(/\s+/g, " ").trim();
 	}
 }
