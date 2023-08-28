@@ -3,6 +3,7 @@ import { readJson } from "./data/readJson.mjs";
 import { handleInteractionCreate } from "./handlers/handleInteractionCreate.mjs";
 import { handleMessageCreate } from "./handlers/handleMessageCreate.mjs";
 import { handleReady } from "./handlers/handleReady.mjs";
+import { getBotId } from "./utils/getBotId.mjs";
 
 const intents = [
 	IntentsBitField.Flags.DirectMessages,
@@ -17,11 +18,11 @@ client.once("ready", handleReady);
 client.on("interactionCreate", handleInteractionCreate);
 client.on("messageCreate", handleMessageCreate);
 
-const botName = process.env["botName"] as "dev" | "prod";
-const token = readJson("bots", botName)?.token;
+const id = getBotId();
+const { name, token } = readJson("bots", id) ?? { };
 if (token) {
-	console.log(`Loading bot: ${botName}`);
+	console.log(`Loading bot: ${name ?? id}`);
 	client.login(token).catch(console.error);
 }else {
-	console.error(`Invalid Token for: ${botName}`);
+	console.error(`Invalid Token for: ${name ?? id}`);
 }

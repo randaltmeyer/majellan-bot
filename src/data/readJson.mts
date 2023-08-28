@@ -2,9 +2,10 @@ import { existsSync, readFileSync } from "fs";
 import { BotInfo, DropInfo, Fetch, InfoBase, Item, ItemInfo, Lang, StringStringMap, Unit, UnitInfo } from "../types.mjs";
 import { AlliesAlmanacCore } from "./AlliesAlmanac.mjs";
 import { getDataPath } from "./getDataPath.mjs";
+import { Snowflake } from "discord.js";
 
 export function readJson(type: "almanacs", file: string): AlliesAlmanacCore | null;
-export function readJson(type: "bots", file: "dev" | "prod"): BotInfo | null;
+export function readJson(type: "bots", file: Snowflake): BotInfo | null;
 
 export function readJson(type: "units/name", file: Lang): StringStringMap | null;
 export function readJson(type: "items/name", file: Lang): StringStringMap | null;

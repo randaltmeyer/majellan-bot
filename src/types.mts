@@ -1,5 +1,8 @@
+import { Snowflake } from "discord.js";
 
 export type BotInfo = {
+	id: Snowflake,
+	name?: string;
 	token: string;
 }
 

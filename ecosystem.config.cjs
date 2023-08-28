@@ -5,11 +5,11 @@ module.exports = {
 
 		env: {
 			NODE_ENV: "development",
-			botName: "dev"
+			botId: "1115758468486397952",
+			devServerId: "1118582629424439346",
 		},
 		env_production: {
 			NODE_ENV: "production",
-			botName: "prod"
 		},
 
 		error_file: "./logs/majellan-bot-error.log",

@@ -1,24 +1,28 @@
 import { Interaction, Message } from "discord.js";
 import { isDevMode } from "./isDevMode.mjs";
-
-const BOT_ID = "1115758468486397952";
-const DEV_SERVER_ID = "1118582629424439346";
+import { getDevServerId } from "./getDevServerId.mjs";
+import { getBotId } from "./getBotId.mjs";
 
 export function canRespond(messageOrInteraction: Message | Interaction): boolean {
+
 	if (messageOrInteraction.member?.user.bot) {
 		return false;
 	}
+
 	if (isDevMode()) {
-		if (messageOrInteraction.guildId !== DEV_SERVER_ID) {
+		if (messageOrInteraction.guildId !== getDevServerId()) {
 			return false;
 		}
 	}
+
 	if ("mentions" in messageOrInteraction) {
-		return messageOrInteraction.mentions.has(BOT_ID)
+		return messageOrInteraction.mentions.has(getBotId())
 			&& !messageOrInteraction.mentions.everyone;
 	}
+
 	if ("customId" in messageOrInteraction) {
 		return messageOrInteraction.customId.startsWith(`dqt|almanac|${messageOrInteraction.user.id}`);
 	}
+
 	return true;
 }
