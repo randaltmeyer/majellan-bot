@@ -21,7 +21,7 @@ type LangJson = { lang:Lang; json:string; }
 async function fetchAndParseJs(key: string): Promise<LangJson[]> {
 	const langJson = [];
 	if (key) {
-		const js = await getDqtJpJs(key, updateFetches);
+		const js = await getDqtJpJs(key, updateFetches || skipReadCache, skipWriteCache);
 		if (js) {
 			for (const lang of LANGS) {
 				const match = js.match(new RegExp(`var ${key}_${lang} = (\{(?:.|\n)*?\});`)) ?? [];
