@@ -10,6 +10,15 @@
     "start": "pm2 start ecosystem.config.cjs",
     "stop": "pm2 stop ecosystem.config.cjs",
     "restart": "pm2 restart ecosystem.config.cjs",
-    "delete": "pm2 delete ecosystem.config.cjs"
+    "delete": "pm2 delete ecosystem.config.cjs",
+
+    "prebuild": "tsc --build --clean",
+    "build": "tsc --build",
+    "precrawl": "npm run build",
+    "crawl": "cd dist; node crawl.mjs",
+    "precrawl-full": "npm run build",
+    "crawl-full": "cd dist; node crawl.mjs --skipReadCache",
+    "preupdate": "npm run build",
+    "update": "cd dist; node crawl.mjs --update"
   }
 }
