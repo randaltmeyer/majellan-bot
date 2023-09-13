@@ -56,6 +56,26 @@ async function getText<T = any>(url: string, postData?: T): Promise<string> {
 	});
 }
 
+const badUrls: string[] = [];
+async function getDqtJpText(url: string, skipWriteCache: boolean, cacheFilePath: string, postData?: any): Promise<string | null> {
+	console.log(`\t\tReading url: ${url}`);
+	const text = await getText(url, postData).catch(err => {
+		if (err?.code === "ECONNRESET") {
+			badUrls.push(url);
+			console.error("\t\t\tECONNRESET");
+		}else {
+			console.error(err);
+		}
+	});
+	if (text && !skipWriteCache) {
+		console.log(`\t\tWriting cache: ${cacheFilePath}`);
+		const cacheDirPath = cacheFilePath.split("/").slice(0, -1).join("/");
+		mkdirSync(cacheDirPath, { recursive:true });
+		writeFileSync(cacheFilePath, text);
+	}
+	return text ?? null;
+}
+
 /** Convenience wrapper for getText(url).then(text => JSON.parse(text)) */
 export function getJson<T = any>(url: string): Promise<T>;
 export function getJson<T = any, U = any>(url: string, postData: U): Promise<T>;
@@ -88,15 +108,7 @@ export async function getDqtJpHtml(type: "item" | "passive" | "skill" | "unit", 
 		}
 	}
 	const url = `https://dqtjp.kusoge.xyz/${type}/${code}`;
-	console.log(`\t\tReading url: ${url}`);
-	const html = await getText(url).catch(console.error);
-	if (!html) {
-		console.warn(`\t\tNo HTML received!`);
-	}else if (!skipWriteCache) {
-		console.log(`\t\tWriting cache: ${cacheFilePath}`);
-		mkdirSync(cacheDirPath, { recursive:true });
-		writeFileSync(cacheFilePath, html);
-	}
+	const html = await getDqtJpText(url, skipWriteCache, cacheFilePath);
 	return html ?? "";
 }
 
@@ -117,15 +129,7 @@ export async function getDqtJpJs(key: string, skipReadCache = false, skipWriteCa
 		}
 	}
 	const url = `https://dqtjp.kusoge.xyz/json/${key}.js`;
-	console.log(`\t\tReading url: ${url}`);
-	const js = await getText(url).catch(console.error);
-	if (!js) {
-		console.warn(`\t\tNo JS received!`);
-	}else if (!skipWriteCache) {
-		console.log(`\t\tWriting cache: ${cacheFilePath}`);
-		mkdirSync(cacheDirPath, { recursive:true });
-		writeFileSync(cacheFilePath, js);
-	}
+	const js = await getDqtJpText(url, skipWriteCache, cacheFilePath);
 	return js ?? "";
 }
 
@@ -147,20 +151,11 @@ export async function getDqtJpJson<T = any>(key: string, method: "GET" | "POST",
 	}
 	const suffix = method === "GET" ? "/0" : "";
 	const url = `https://dqtjp.kusoge.xyz/${key}/q${suffix}`;
-	console.log(`\t\tReading url: ${url}`);
-	const json = await getText(url, method === "GET" ? undefined : {}).catch(console.error);
-	if (!json) {
-		console.warn(`\t\tNo JSON received!`);
-		return null;
-	}else if (!skipWriteCache) {
-		console.log(`\t\tWriting cache: ${cacheFilePath}`);
-		mkdirSync(cacheDirPath, { recursive:true });
-		writeFileSync(cacheFilePath, json);
-	}
+	const json = await getDqtJpText(url, skipWriteCache, cacheFilePath, method === "GET" ? undefined : {})
 	try {
-		return JSON.parse(json) ?? null;
+		return json ? JSON.parse(json) ?? null : null;
 	}catch(ex) {
 		console.error(ex);
+		return null;
 	}
-	return null;
 }
