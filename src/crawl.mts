@@ -1,7 +1,7 @@
 import { findDropsByUnit } from "./data/findDropsByUnit.mjs";
 import { findKeyOrValue } from "./data/findKeyOrValue.mjs";
 import { formatDropInfo } from "./data/formatDropInfo.mjs";
-import { getDqtJpHtml, getDqtJpJs, getDqtJpJson, setPauseMs } from "./data/getDqtJpData.mjs";
+import { getBadUrls, getDqtJpHtml, getDqtJpJs, getDqtJpJson, setPauseMs } from "./data/getDqtJpData.mjs";
 import { readJson } from "./data/readJson.mjs";
 import { BATTLE_ROAD_SUPER, DROP_SUPER, InfoBase, Item, LANGS, Lang, UNRELEASED_SUPER, Unit } from "./types.mjs";
 import { normalizeString } from "./utils/normalizeString.mjs";
@@ -183,6 +183,9 @@ async function main() {
 	await doItems();
 
 	await doUnits();
+
+	console.log("Bad Urls:");
+	getBadUrls().forEach(url => console.log(`\t${url}`));
 
 	console.log("Finished main()");
 }

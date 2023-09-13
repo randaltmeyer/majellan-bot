@@ -57,6 +57,9 @@ async function getText<T = any>(url: string, postData?: T): Promise<string> {
 }
 
 const badUrls: string[] = [];
+export function getBadUrls(): string[] {
+	return badUrls;
+}
 async function getDqtJpText(url: string, skipWriteCache: boolean, cacheFilePath: string, postData?: any): Promise<string | null> {
 	console.log(`\t\tReading url: ${url}`);
 	const text = await getText(url, postData).catch(err => {
