@@ -12,6 +12,8 @@
     "restart": "pm2 restart ecosystem.config.cjs",
     "delete": "pm2 delete ecosystem.config.cjs",
 
+    "start-prod": "pm2 start ecosystem.config.cjs --env production",
+
     "prebuild": "tsc --build --clean",
     "build": "tsc --build",
     "precrawl": "npm run build",
