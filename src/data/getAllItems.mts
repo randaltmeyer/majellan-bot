@@ -9,3 +9,7 @@ export function getAllItems(): Item[] {
 	}
 	return _allItems;
 }
+
+export function clearItemsCache(): void {
+	_allItems.length = 0;
+}

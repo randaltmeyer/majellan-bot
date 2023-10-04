@@ -60,12 +60,15 @@ const badUrls: string[] = [];
 export function getBadUrls(): string[] {
 	return badUrls;
 }
+export function clearBadUrls(): void {
+	badUrls.length = 0;
+}
 async function getDqtJpText(url: string, skipWriteCache: boolean, cacheFilePath: string, postData?: any): Promise<string | null> {
 	console.log(`\t\tReading url: ${url}`);
 	const text = await getText(url, postData).catch(err => {
 		if (err?.code === "ECONNRESET") {
 			badUrls.push(url);
-			console.error("\t\t\tECONNRESET");
+			console.log("\t\t\tECONNRESET");
 		}else {
 			console.error(err);
 		}

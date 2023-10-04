@@ -1,8 +1,10 @@
 import { writeFileSync } from "fs";
 import { AlliesAlmanacCore } from "./AlliesAlmanac.mjs";
 import { getDataPath } from "./getDataPath.mjs";
+import { UpdateInfo } from "../types.mjs";
 
 export function writeJson(type: "almanacs", userId:string, almanac: AlliesAlmanacCore): void;
+export function writeJson(type: "", name:"updateInfo", updateInfo: UpdateInfo): void;
 
 export function writeJson(type: string, name:string, data: any): void;
 

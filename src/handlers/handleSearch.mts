@@ -1,15 +1,11 @@
 import { Message, userMention } from "discord.js";
 import { findUnits } from "../data/findUnits.mjs";
 import { BATTLE_ROAD_SUPER, DROP_SUPER, UNRELEASED_SUPER } from "../types.mjs";
-import { canRespond } from "../utils/canRespond.mjs";
 import { cleanContent } from "../utils/cleanContent.mjs";
 import { embedPartialUnits } from "./embeds/embedPartialUnits.mjs";
 import { embedUnit } from "./embeds/embedUnit.mjs";
 
 export async function handleSearch(message: Message): Promise<void> {
-	if (!canRespond(message)) {
-		return;
-	}
 	const content = cleanContent(message);
 	if (content.length < 3) {
 		const content = `Hello, I can only search for names of 3 or more characters.`;

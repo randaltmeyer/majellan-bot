@@ -10,3 +10,4 @@ types
 package-lock.json
 cache.zip
 .DS_Store
+updateinfo.json

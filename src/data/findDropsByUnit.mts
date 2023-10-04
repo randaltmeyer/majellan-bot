@@ -21,3 +21,7 @@ export function findDropsByUnit(unitKey: string): DropInfo[] {
 	}
 	return drops;
 }
+
+export function clearDropInfoCache(): void {
+	_allDropInfo.length = 0;
+}

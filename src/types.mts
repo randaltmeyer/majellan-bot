@@ -6,6 +6,11 @@ export type BotInfo = {
 	token: string;
 }
 
+export type UpdateInfo = {
+	ts: number;
+	userId: Snowflake;
+};
+
 /*
 {
 	"code":100020102,

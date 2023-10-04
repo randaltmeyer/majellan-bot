@@ -23,3 +23,8 @@ export function getKeyNameMap(lang: Lang = "en"): Map<string, string> {
 	}
 	return maps.get(lang)!;
 }
+
+export function clearKeyNameMaps(): void {
+	[...maps.values()].forEach(map => map.clear());
+	maps.clear();
+}

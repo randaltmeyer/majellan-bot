@@ -9,3 +9,7 @@ export function getAllUnits(): Unit[] {
 	}
 	return _allUnits;
 }
+
+export function clearUnitsCache(): void {
+	_allUnits.length = 0;
+}

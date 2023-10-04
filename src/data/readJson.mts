@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from "fs";
-import { BotInfo, DropInfo, Fetch, InfoBase, Item, ItemInfo, Lang, StringStringMap, Unit, UnitInfo } from "../types.mjs";
+import { BotInfo, DropInfo, Fetch, InfoBase, Item, ItemInfo, Lang, StringStringMap, Unit, UnitInfo, UpdateInfo } from "../types.mjs";
 import { AlliesAlmanacCore } from "./AlliesAlmanac.mjs";
 import { getDataPath } from "./getDataPath.mjs";
 import { Snowflake } from "discord.js";
@@ -24,6 +24,8 @@ export function readJson(type: "units", file: "raw"): UnitInfo[] | null;
 export function readJson(type: "units", file: "all"): Unit[] | null;
 export function readJson(type: "items", file: "all"): Item[] | null;
 
+export function readJson(type: "", file: "updateInfo"): UpdateInfo | null;
+
 export function readJson<T>(type: string, file: string): T | null {
 	try {
 		const path = getDataPath(`${type}/${file}.json`);
@@ -31,6 +33,7 @@ export function readJson<T>(type: string, file: string): T | null {
 			const contents = readFileSync(path, "utf8");
 			return JSON.parse(contents);
 		}
+		console.error(`Invalid Path: ${path}`);
 	}catch(ex) {
 		console.error(ex);
 	}
