@@ -15,7 +15,7 @@ export async function getOrFetch(type: "equipment"): Promise<RawEquipment[]>;
 export async function getOrFetch(type: "unit"): Promise<Unit[]>;
 export async function getOrFetch(type: "rawUnit"): Promise<RawUnit[]>;
 export async function getOrFetch<T>(type: FetchableType): Promise<T[]> {
-	const prefix = type === "rawUnit" ? "unit" : "type";
+	const prefix = type === "rawUnit" ? "unit" : type;
 	const suffix = ["farmable", "unit"].includes(type) ? "majellan_bot" : "";
 	const url = `https://drackyknowledge.com/api/${prefix}/${suffix}`;
 	const filePath = getDataPath(`${type}.json`);
