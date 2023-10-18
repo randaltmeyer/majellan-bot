@@ -8,7 +8,7 @@ export function embedPartialUnits(units: Unit[]): EmbedBuilder[] {
 	const embed = createEmbed(`**I also found partial match(es):**`);
 	embeds.push(embed);
 
-	const names = units.map(unit => unit.display_name + unit.notes);
+	const names = units.map(unit => unit.name + unit.notes);
 	const also = `> ${names.join(", ")}`;
 	let notes = "";
 	const unreleased = also.includes(UNRELEASED_SUPER),

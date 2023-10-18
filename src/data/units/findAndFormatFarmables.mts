@@ -1,5 +1,4 @@
 import { Farmable } from "../../types.mjs";
-import { getAll } from "../json/getAll.mjs";
 
 function match(unitName: string, farmable: Farmable): boolean {
 	return farmable.enemy_display_name === unitName;
@@ -9,7 +8,7 @@ export function hasFarmables(unitName: string, farmables: Farmable[]): boolean {
 	return farmables.find(farmable => match(unitName, farmable)) !== undefined;
 }
 
-export function findAndFormatFarmables(unitName: string, farmables = getAll("farmable")): string[] {
+export function findAndFormatFarmables(unitName: string, farmables: Farmable[]): string[] {
 	const unitFarmables = farmables.filter(farmable => match(unitName, farmable));
 
 	unitFarmables.sort((a, b) => {

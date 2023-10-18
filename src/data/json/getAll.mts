@@ -1,21 +1,18 @@
-import { Area, Family, Farmable, Item, Rank, Role, Unit } from "../../types.mjs";
+import { Area, Farmable, Unit } from "../../types.mjs";
+import { RawEquipment } from "../units/RawEquipment.mjs";
 import { getDataPath } from "./getDataPath.mjs";
 import { readJson } from "./readJson.mjs";
 
-type TypeKey = "area" | "farmable" | "item" | "unit" | "family" | "rank" | "role";
-type DataType = Area | Farmable | Item | Unit | Family | Rank | Role;
+type TypeKey = "area" | "farmable" | "equipment" | "unit";
+type DataType = Area | Farmable | RawEquipment | Unit;
 
 const memCache = new Map<TypeKey, DataType[]>();
 
 export function getAll(type: "area"): Area[];
 export function getAll(type: "farmable"): Farmable[];
-export function getAll(type: "item"): Item[];
+export function getAll(type: "equipment"): RawEquipment[];
 export function getAll(type: "unit"): Unit[];
-export function getAll(type: "family"): Family[];
-export function getAll(type: "rank"): Rank[];
-export function getAll(type: "role"): Role[];
 export function getAll(type: TypeKey): DataType[] {
-	if (type === "item") return [];
 	if (!memCache.has(type)) {
 		const filePath = getDataPath(`${type}.json`);
 		const data = readJson<DataType[]>({ filePath }) ?? [];

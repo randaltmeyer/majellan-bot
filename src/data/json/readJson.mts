@@ -10,7 +10,7 @@ export function readJson<T>({ skipRead, filePath }: Options = { }): T | null {
 	if (skipRead !== true && filePath) {
 		try {
 			if (existsSync(filePath)) {
-				verbose(`Reading cache: ${filePath}`);
+				verbose(`Reading JSON: ${filePath}`);
 				const raw = readFileSync(filePath, "utf8");
 				return raw ? JSON.parse(raw) : null;
 			}

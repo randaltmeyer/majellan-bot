@@ -5,25 +5,25 @@ import { createEmbed } from "./createEmbed.mjs";
 export function embedUnit(unit: Unit, almanac = false): EmbedBuilder[] {
 	const embeds: EmbedBuilder[] = [];
 
-	const embed = createEmbed(`**${unit.display_name}**`);
+	const embed = createEmbed(`**${unit.name}**`);
 	embeds.push(embed);
 
-	embed.setThumbnail(`https://drackyknowledge.com/${unit.unit_icon}`);
+	embed.setThumbnail(`https://drackyknowledge.com/${unit.icon}`);
 
-	const rarity = unit.unit_rank.toLowerCase() as keyof typeof EMOJI;
+	const rarity = unit.rank.toLowerCase() as keyof typeof EMOJI;
 	const family = unit.family.toLowerCase() as keyof typeof EMOJI;
 	const role = unit.role.toLowerCase() as keyof typeof EMOJI;
 
 	let content = `${EMOJI[rarity]} ${EMOJI[family]} ${EMOJI[role]}`;
-	if (unit.has_blossom) {
+	if (unit.hasBlossom) {
 		content += " " + EMOJI.talentBlossom;
 	}
-	if (unit.has_character_builder) {
+	if (unit.hasCharacterBuilder) {
 		content += " " + EMOJI.characterBuilder;
 	}
 	content += `\n**Weight:** ${unit.weight}`;
-	if (unit.items?.length) {
-		content += `\n**Equipment**: ${unit.items.join(", ")}`;
+	if (unit.equipment?.length) {
+		content += `\n**Equipment**: ${unit.equipment.join(", ")}`;
 	}
 	if (unit.notes.includes(UNRELEASED_SUPER)) {
 		content += `\n*unit is new/unreleased*`;

@@ -78,11 +78,6 @@ export type Area = {
 	}[];
 };
 
-export type Family = {
-	name: string;
-	icon: string;
-};
-
 export type Farmable = {
 	stage_area_name: string;
 	stage_area_group_name: string;
@@ -93,43 +88,33 @@ export type Farmable = {
 	is_best_drop_rate: boolean;
 };
 
-export type Item = {
+export type Equipment = {
 	id: string;
-};
-
-export type Rank = {
-	name: string;
-	icon: string;
-};
-
-export type Role = {
-	name: string;
-	icon: string;
+	equipment_display_name: string;
+	equipment_category: string;
 };
 
 export type Unit = {
 	id: string;
-	display_name: string;
-	unit_icon: string;
-	small_family_icon?: string;
+	name: string;
+	icon: string;
 
 	family: string;
-	family_icon?: string;
 	role: string;
-	role_icon?: string;
-	unit_rank: string;
-	unit_rank_icon?: string;
+	rank: string;
 	weight: string;
 
-	has_blossom: boolean;
-	has_character_builder: boolean;
+	hasBlossom: boolean;
+	hasCharacterBuilder: boolean;
 
 	/** custom */
 	notes: string;
 	/** custom */
-	farmQuests?: string[];
+	farmQuests: string[];
 	/** custom */
-	battleRoads?: string[];
+	battleRoads: string[];
 	/** custom */
-	items?: string[];
+	equipment: string[];
+	/** custom */
+	skillNames: string[];
 };

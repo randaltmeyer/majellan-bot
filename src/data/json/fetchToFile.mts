@@ -1,15 +1,23 @@
 import followRedirects from "follow-redirects";
+import { WriteStream, createWriteStream, existsSync, mkdirSync, rmSync } from "fs";
 import { PercentLogger } from "../../utils/PercentLogger.mjs";
-import { existsSync, rmSync, createWriteStream, WriteStream } from "fs";
 import { verbose } from "../../utils/logger.mjs";
 
-export async function fetchToCache(url: string, cacheFilePath: string): Promise<void> {
+export async function fetchToFile(url: string, filePath: string): Promise<void> {
 	return new Promise((_resolve, _reject) => {
-		if (existsSync(cacheFilePath)) {
-			verbose(`Removing old cache: ${cacheFilePath}`);
-			rmSync(cacheFilePath);
+		const dirPath = filePath.split("/").slice(0, -1).join("/");
+		if (!existsSync(dirPath)) {
+			verbose(`Creating folder: ${dirPath}`);
+			mkdirSync(dirPath, { recursive:true });
 		}
-		let writeStream: WriteStream | null = createWriteStream(cacheFilePath, { encoding:"utf8" });
+
+		if (existsSync(filePath)) {
+			verbose(`Removing old file: ${filePath}`);
+			rmSync(filePath);
+		}
+
+		verbose(`Opening file for stream: ${filePath}`);
+		let writeStream: WriteStream | null = createWriteStream(filePath, { encoding:"utf8" });
 		let pLogger: PercentLogger | null = new PercentLogger(`Fetching Bytes: ${url}`, 0);
 		const resolve = () => {
 			pLogger?.finish();

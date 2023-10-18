@@ -1,5 +1,4 @@
 import { Area } from "../../types.mjs";
-import { getAll } from "../json/getAll.mjs";
 
 function match(unitName:string, area: Area): boolean {
 	return area.area_category === 4
@@ -10,7 +9,7 @@ export function hasBattleRoads(unitName: string, areas: Area[]): boolean {
 	return !!areas.find(area => match(unitName, area));
 }
 
-export function findAndFormatBattleRoads(unitName: string, areas = getAll("area")): string[] {
+export function findAndFormatBattleRoads(unitName: string, areas: Area[]): string[] {
 	const battleRoads = areas.filter(area => match(unitName, area));
 	battleRoads.sort((a, b) => a < b ? -1 : 1);
 	return battleRoads.map(area => {

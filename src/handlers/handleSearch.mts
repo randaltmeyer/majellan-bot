@@ -27,7 +27,7 @@ async function respondSorry(message: Message, { content, byPartialName }: FindUn
 
 	const byP = byPartialName.length;
 	if (byP) {
-		const names = byPartialName.map(unit => unit.display_name + unit.notes);
+		const names = byPartialName.map(unit => unit.name + unit.notes);
 		but = `\n\nI did find partial match(es):\n> ${names.join(", ")}`;
 
 		const unreleased = but.includes(UNRELEASED_SUPER),
