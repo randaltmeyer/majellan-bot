@@ -4,6 +4,7 @@ import { readJson } from "../data/json/readJson.mjs";
 import { writeJson } from "../data/json/writeJson.mjs";
 import { updateUnits } from "../data/units/updateUnits.mjs";
 import { UpdateInfo } from "../types.mjs";
+import { error } from "../utils/logger.mjs";
 
 let updating = false;
 
@@ -31,7 +32,7 @@ export async function handleUpdate(message: Message, force: boolean): Promise<vo
 
 	updating = true;
 
-	await updateUnits().catch(console.error);
+	await updateUnits().catch(error);
 
 	const updateTs = Date.now();
 

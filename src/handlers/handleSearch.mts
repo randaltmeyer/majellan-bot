@@ -2,6 +2,7 @@ import { Message, userMention } from "discord.js";
 import { FindUnitsResponse, findUnits } from "../data/units/findUnits.mjs";
 import { BATTLE_ROAD_SUPER, DROP_SUPER, UNRELEASED_SUPER } from "../types.mjs";
 import { cleanContent } from "../utils/cleanContent.mjs";
+import { debug, error } from "../utils/logger.mjs";
 import { embedPartialUnits } from "./embeds/embedPartialUnits.mjs";
 import { embedUnit } from "./embeds/embedUnit.mjs";
 
@@ -68,8 +69,8 @@ export async function handleSearch(message: Message): Promise<void> {
 			await respondSorry(message, response);
 		}
 	}catch(ex) {
-		console.error(ex);
-		console.debug(`messageCreate: User(${message.member?.user.tag}), Guild(${message.guild?.name})`);
+		error(ex);
+		debug(`messageCreate: User(${message.member?.user.tag}), Guild(${message.guild?.name})`);
 		message.reply(`Hello ${userMention(message.author.id)}, something went wrong while searching!`);
 	}
 }

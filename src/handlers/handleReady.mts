@@ -1,5 +1,6 @@
 import { ActivityType, Client } from "discord.js";
 import { isDevMode } from "../utils/isDevMode.mjs";
+import { info, warn } from "../utils/logger.mjs";
 
 export async function handleReady(client: Client): Promise<void> {
 	if (client.isReady()) {
@@ -11,8 +12,8 @@ export async function handleReady(client: Client): Promise<void> {
 			type: ActivityType.Watching
 		});
 	
-		console.log(isDevMode() ? "Dev Mode Ready" : "Bot Ready");
+		info(isDevMode() ? "Dev Mode Ready" : "Bot Ready");
 	}else {
-		console.warn("Bot Not Ready");
+		warn("Bot Not Ready");
 	}
 }
