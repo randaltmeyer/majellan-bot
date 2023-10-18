@@ -16,11 +16,8 @@
 
     "prebuild": "tsc --build --clean",
     "build": "tsc --build",
-    "precrawl": "npm run build",
-    "crawl": "cd dist; node crawl.mjs",
-    "precrawl-full": "npm run build",
-    "crawl-full": "cd dist; node crawl.mjs --skipReadCache",
+
     "preupdate": "npm run build",
-    "update": "cd dist; node crawl.mjs --update"
+    "update": "cd dist; node update.mjs"
   }
 }

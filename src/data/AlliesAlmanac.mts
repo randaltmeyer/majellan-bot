@@ -2,7 +2,7 @@ import { readJson } from "./readJson.mjs";
 import { writeJson } from "./writeJson.mjs";
 
 export type AlmanacUnitEntry = {
-	code: number;
+	id: string;
 	/** user has unit */
 	has?: 0 | 1;
 	/** awaken 0-5 */
@@ -21,9 +21,9 @@ export type AlliesAlmanacCore = {
 	/** discord user snowflake */
 	userId: string;
 	/** code of unit being viewed */
-	activeUnit?: number;
+	activeUnit?: string;
 	/** unit entries */
-	units?: { [key: number]: AlmanacUnitEntry; };
+	units?: { [id: string]: AlmanacUnitEntry; };
 };
 
 export class AlliesAlmanac {
@@ -35,30 +35,30 @@ export class AlliesAlmanac {
 		return Object.values(this.units).filter(entry => entry.has).length;
 	}
 
-	public activeUnit(): number;
-	public activeUnit(code: number): void;
-	public activeUnit(code?: number): void | number {
-		if (code === undefined) {
+	public activeUnit(): string;
+	public activeUnit(id: string): void;
+	public activeUnit(id?: string): void | string {
+		if (id === undefined) {
 			return this.core.activeUnit;
 		}
-		if (this.core.activeUnit !== code) {
-			this.core.activeUnit = code;
+		if (this.core.activeUnit !== id) {
+			this.core.activeUnit = id;
 			this.save();
 		}
 	}
 
-	public getUnit(code: number): AlmanacUnitEntry {
-		return this.units[code] ?? { code };
+	public getUnit(id: string): AlmanacUnitEntry {
+		return this.units[id] ?? { id };
 	}
 
-	public hasUnit(code: number): boolean;
-	public hasUnit(code: number, has: boolean): void;
-	public hasUnit(code: number, has?: boolean): void | boolean {
+	public hasUnit(id: string): boolean;
+	public hasUnit(id: string, has: boolean): void;
+	public hasUnit(id: string, has?: boolean): void | boolean {
 		if (has === undefined) {
-			return this.units[code]?.has === 1;
+			return this.units[id]?.has === 1;
 		}
 		const units = this.units;
-		const entry = units[code] ?? (units[code] = { code });
+		const entry = units[id] ?? (units[id] = { id });
 		if (!entry.has !== !has) {
 			entry.has = has ? 1 : 0;
 			this.save();

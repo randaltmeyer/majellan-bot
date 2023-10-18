@@ -1,5 +1,5 @@
 import { Message, userMention } from "discord.js";
-import { findUnits } from "../data/findUnits.mjs";
+import { findUnits } from "../data/units/findUnits.mjs";
 import { BATTLE_ROAD_SUPER, DROP_SUPER, UNRELEASED_SUPER } from "../types.mjs";
 import { cleanContent } from "../utils/cleanContent.mjs";
 import { embedPartialUnits } from "./embeds/embedPartialUnits.mjs";
@@ -34,7 +34,7 @@ export async function handleSearch(message: Message): Promise<void> {
 
 			const byP = units.byPartialName.length;
 			if (byP) {
-				const names = units.byPartialName.map(unit => unit.name + unit.notes);
+				const names = units.byPartialName.map(unit => unit.display_name + unit.notes);
 				but = `\n\nI did find partial match(es):\n> ${names.join(", ")}`;
 
 				const unreleased = but.includes(UNRELEASED_SUPER),

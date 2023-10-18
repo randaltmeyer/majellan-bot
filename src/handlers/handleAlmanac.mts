@@ -1,6 +1,6 @@
 import { ButtonInteraction, EmbedBuilder, Interaction, Message, StringSelectMenuInteraction, userMention } from "discord.js";
 import { AlliesAlmanac } from "../data/AlliesAlmanac.mjs";
-import { getAllUnits } from "../data/getAllUnits.mjs";
+import { getAllUnits } from "../data/units/getAllUnits.mjs";
 import { embedUnit } from "./embeds/embedUnit.mjs";
 import { formUnit } from "./forms/formUnit.mjs";
 
@@ -22,23 +22,23 @@ function getValue(parts: string[], key: string): string | undefined {
 function parseCustomId(customId: string) {
 	const idParts = customId.split("|");
 	const userId = getValue(idParts, "almanac")!;
-	const addCode = +getValue(idParts, "add")!;
-	const removeCode = +getValue(idParts, "remove")!;
-	const navCode = +getValue(idParts, "nav")!;
-	return { userId, addCode, removeCode, navCode };
+	const addId = getValue(idParts, "add")!;
+	const removeId = getValue(idParts, "remove")!;
+	const navId = getValue(idParts, "nav")!;
+	return { userId, addId, removeId, navId };
 }
 
 async function handleAlmanacInteraction(interaction: ButtonInteraction | StringSelectMenuInteraction): Promise<void> {
-	const { userId, addCode, removeCode, navCode } = parseCustomId(interaction.customId);
+	const { userId, addId, removeId, navId } = parseCustomId(interaction.customId);
 	const almanac = AlliesAlmanac.getOrCreate(userId);
-	if (addCode) {
-		almanac.hasUnit(addCode, true);
+	if (addId) {
+		almanac.hasUnit(addId, true);
 	}
-	if (removeCode) {
-		almanac.hasUnit(removeCode, false);
+	if (removeId) {
+		almanac.hasUnit(removeId, false);
 	}
-	if (navCode) {
-		almanac.activeUnit(navCode);
+	if (navId) {
+		almanac.activeUnit(navId);
 	}
 	const payload = await createPayload(userId);
 	await interaction.message.edit(payload);
@@ -56,10 +56,10 @@ function round(percent: number): number {
 async function createPayload(userId: string) {
 	const almanac = AlliesAlmanac.getOrCreate(userId);
 	const units = getAllUnits();
-	const unitCode = almanac.activeUnit() ?? units[0].code;
-	const unit = units.find(unit => unit.code === unitCode) ?? units[0];
+	const unitId = almanac.activeUnit() ?? units[0].id;
+	const unit = units.find(unit => unit.id === unitId) ?? units[0];
 	const unitIndex = units.indexOf(unit);
-	const unitEntry = almanac.getUnit(unitCode);
+	const unitEntry = almanac.getUnit(unitId);
 
 	// const unownedFarmableUnits = units.filter(unit => unit.farmQuests.length && !almanac.hasUnit(unit.code));
 

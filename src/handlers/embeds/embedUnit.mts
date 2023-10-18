@@ -1,6 +1,7 @@
 import { EmbedBuilder } from "discord.js";
-import { UNRELEASED_SUPER, Unit } from "../../types.mjs";
+import { UNRELEASED_SUPER } from "../../types.mjs";
 import { isDevMode } from "../../utils/isDevMode.mjs";
+import { Unit } from "../../data/units/Unit.mjs";
 
 const EMOJI = {
 	// characterBuilder: "<:998:1118620463527104532>",
@@ -14,6 +15,7 @@ const EMOJI = {
 	hero: "<:004:1118599813219483708>",
 	inorganic: "<:005:1118599814452629584>",
 	material: "<:005:1118599814452629584>",
+	"???": "<:005:1118599814452629584>",
 	mystery: "<:006:1118599815878692964>",
 	unknown: "<:006:1118599815878692964>",
 	nature: "<:007:1118600211229581345>",
@@ -27,10 +29,15 @@ const EMOJI = {
 	e: "<:eee:1118599809457209465>",
 	f: "<:fff:1118599810711294064>",
 	s: "<:sss:1118599819179597944>",
+	attack: "<:010:1118604458356654141>",
 	attacker: "<:010:1118604458356654141>",
+	debuff: "<:011:1118604460705464412>",
 	debuffer: "<:011:1118604460705464412>",
 	tank: "<:012:1118604462353829930>",
+	defence: "<:012:1118604462353829930>",
+	magic: "<:013:1118604463846993981>",
 	magician: "<:013:1118604463846993981>",
+	support: "<:014:1118604466371956736>",
 	supporter: "<:014:1118604466371956736>"
 };
 
@@ -39,22 +46,21 @@ export function embedUnit(unit: Unit, almanac = false): EmbedBuilder[] {
 
 	const embed = new EmbedBuilder();
 	embeds.push(embed);
-	
-	embed.setTitle(`**${unit.name}**`);
-	
-	embed.setThumbnail(`https://dqt.kusoge.xyz/img/icon/${unit.icon}`);
 
-	const rarity = unit.rarity.name.split(".").pop()?.toLowerCase() as keyof typeof EMOJI;
-	const family = unit.family.name.split(".").pop()?.toLowerCase() as keyof typeof EMOJI;
-	const role = unit.role.name.split(".").pop()?.toLowerCase() as keyof typeof EMOJI;
+	embed.setTitle(`**${unit.display_name}**`);
+	embed.setThumbnail(`https://drackyknowledge.com/${unit.unit_icon}`);
 
-	// if (!EMOJI[rarity]) console.log(unit.rarity.name, EMOJI[rarity]);
-	// if (!EMOJI[family]) console.log(unit.family.name, EMOJI[family]);
-	// if (!EMOJI[role]) console.log(unit.role.name, EMOJI[role]);
+	const rarity = unit.unit_rank.toLowerCase() as keyof typeof EMOJI;
+	const family = unit.family.toLowerCase() as keyof typeof EMOJI;
+	const role = unit.role.toLowerCase() as keyof typeof EMOJI;
 
 	let content = `${EMOJI[rarity]} ${EMOJI[family]} ${EMOJI[role]}`;
-	if (unit.tBlossom) content += " " + EMOJI.talentBlossom;
-	if (unit.cBuilder) content += " " + EMOJI.characterBuilder;
+	if (unit.has_blossom) {
+		content += " " + EMOJI.talentBlossom;
+	}
+	if (unit.has_character_builder) {
+		content += " " + EMOJI.characterBuilder;
+	}
 	content += `\n**Weight:** ${unit.weight}`;
 	if (unit.items.length) {
 		content += `\n**Equipment**: ${unit.items.join(", ")}`;
@@ -63,16 +69,24 @@ export function embedUnit(unit: Unit, almanac = false): EmbedBuilder[] {
 		content += `\n*unit is new/unreleased*`;
 	}
 	embed.setDescription(content.trim());
-	if (!almanac) {
-		if (unit.farmQuests.length) {
-			embed.addFields({ name:"**Recruited From**", value:unit.farmQuests.join("\n") });
-		}
-		if (unit.battleRoads?.length) {
-			embed.addFields({ name:"**Battle Roads**", value:unit.battleRoads.join("\n") });
-		}
-	}
+
 	if (isDevMode()) {
 		embed.setFooter({ text:"*dev mode*" });
+	}
+
+	if (!almanac) {
+		if (unit.farmQuests?.length) {
+			const farmEmbed = new EmbedBuilder();
+			farmEmbed.setTitle("**Recruited From**");
+			farmEmbed.setDescription(unit.farmQuests.join("\n"));
+			embeds.push(farmEmbed);
+		}
+		if (unit.battleRoads?.length) {
+			const battleRoadEmbed = new EmbedBuilder();
+			battleRoadEmbed.setTitle("**Battle Roads**");
+			battleRoadEmbed.setDescription(unit.battleRoads.join("\n"));
+			embeds.push(battleRoadEmbed);
+		}
 	}
 	return embeds;
 }

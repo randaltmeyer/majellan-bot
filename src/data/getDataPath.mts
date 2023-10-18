@@ -15,7 +15,7 @@ function cleanPath(path: string): string {
 export function getDataPath(relative?: string): string {
 	const root = existsSync("../data") ? "../data" : "./data";
 	if (relative) {
-		const path = cleanPath(root + "/" + cleanRelative(relative));
+		const path = cleanPath(`${root}/${cleanRelative(relative)}`);
 		const dir = path.split("/").slice(0, -1).join("/");
 		if (!existsSync(dir)) {
 			mkdirSync(dir, { recursive:true });

@@ -1,19 +1,23 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } from "discord.js";
 import { AlmanacUnitEntry } from "../../data/AlliesAlmanac.mjs";
-import { getAllUnits } from "../../data/getAllUnits.mjs";
+import { getAllUnits } from "../../data/units/getAllUnits.mjs";
 
 // StringSelectMenuBuilder, StringSelectMenuOptionBuilder
 
-function getPrevUnit(code: number) {
+function getPrevUnit(id: string) {
 	const allUnits = getAllUnits();
-	const index = allUnits.findIndex(unit => unit.code === code);
-	if (index === 0) return allUnits[allUnits.length - 1];
+	const index = allUnits.findIndex(unit => unit.id === id);
+	if (index === 0) {
+		return allUnits[allUnits.length - 1];
+	}
 	return allUnits[index - 1];
 }
-function getNextUnit(code: number) {
+function getNextUnit(id: string) {
 	const allUnits = getAllUnits();
-	const index = allUnits.findIndex(unit => unit.code === code);
-	if (index === allUnits.length - 1) return allUnits[0];
+	const index = allUnits.findIndex(unit => unit.id === id);
+	if (index === allUnits.length - 1) {
+		return allUnits[0];
+	}
 	return allUnits[index + 1];
 }
 
@@ -27,9 +31,9 @@ function createButton(label: string, id: string, style?: ButtonStyle): ButtonBui
 function navRow(userId: string, unitEntry: AlmanacUnitEntry): ActionRowBuilder<ButtonBuilder> {
 	const row = new ActionRowBuilder<ButtonBuilder>();
 
-	const unitCode = unitEntry.code;
-	const prevCode = getPrevUnit(unitCode).code;
-	const nextCode = getNextUnit(unitCode).code;
+	const unitId = unitEntry.id;
+	const prevCode = getPrevUnit(unitId).id;
+	const nextCode = getNextUnit(unitId).id;
 
 	// previous button
 	const prevBtn = createButton("Previous", `dqt|almanac|${userId}|nav|${prevCode}`, ButtonStyle.Secondary);
@@ -37,15 +41,15 @@ function navRow(userId: string, unitEntry: AlmanacUnitEntry): ActionRowBuilder<B
 
 	if (unitEntry.has) {
 		// remove button
-		const removeBtn = createButton("Remove", `dqt|almanac|${userId}|remove|${unitCode}`, ButtonStyle.Danger);
+		const removeBtn = createButton("Remove", `dqt|almanac|${userId}|remove|${unitId}`, ButtonStyle.Danger);
 		row.addComponents(removeBtn);
 	}else {
 		// add button
-		const addBtn = createButton("Add", `dqt|almanac|${userId}|add|${unitCode}`);
+		const addBtn = createButton("Add", `dqt|almanac|${userId}|add|${unitId}`);
 		row.addComponents(addBtn);
 
 		// add / next button
-		const addNextBtn = createButton("Add & Next", `dqt|almanac|${userId}|add|${unitCode}|nav|${nextCode}`);
+		const addNextBtn = createButton("Add & Next", `dqt|almanac|${userId}|add|${unitId}|nav|${nextCode}`);
 		row.addComponents(addNextBtn);
 	}
 

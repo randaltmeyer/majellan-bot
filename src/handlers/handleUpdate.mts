@@ -1,7 +1,6 @@
-import { fork } from "child_process";
 import { Message } from "discord.js";
-import { clearCache } from "../data/clearCache.mjs";
 import { readJson } from "../data/readJson.mjs";
+import { updateUnits } from "../data/units/updateUnits.mjs";
 import { writeJson } from "../data/writeJson.mjs";
 
 let updating = false;
@@ -29,8 +28,7 @@ export async function handleUpdate(message: Message, force: boolean): Promise<vo
 
 	updating = true;
 
-	await runUpdate().catch(console.error);
-	clearCache();
+	await updateUnits().catch(console.error);
 
 	const updateTs = Date.now();
 
@@ -40,12 +38,4 @@ export async function handleUpdate(message: Message, force: boolean): Promise<vo
 
 	const reply = await replyPromise;
 	await reply.edit(`${reply.content}\n:arrow_down:\n*update complete* ${tsToRelative(updateTs)}`);
-}
-
-function runUpdate(): Promise<void> {
-	return new Promise((resolve, reject) => {
-		const updateProcess = fork("crawl.mjs", ["--update"], { cwd:"./dist" });
-		updateProcess.on("error", reject);
-		updateProcess.on("exit", exitCode => exitCode === 0 ? resolve() : reject({exitCode}));
-	});
 }

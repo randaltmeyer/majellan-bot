@@ -4,7 +4,9 @@ export function normalizeString(value: string): string;
 export function normalizeString(value: Nullable<string>): Nullable<string>;
 export function normalizeString(value: Optional<string>): Optional<string>;
 export function normalizeString(value: Optional<string>): Optional<string> {
-	if (!value) return value;
+	if (!value) {
+		return value;
+	}
 	return value
 		.replace(/(&#39;)+/g, `'`)
 		.replace(/[\u2018\u2019]/g, `'`)
