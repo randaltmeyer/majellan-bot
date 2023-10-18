@@ -1,15 +1,12 @@
 import { EmbedBuilder } from "discord.js";
-import { Unit } from "../../data/units/Unit.mjs";
-import { BATTLE_ROAD_SUPER, DROP_SUPER, UNRELEASED_SUPER } from "../../types.mjs";
-import { isDevMode } from "../../utils/isDevMode.mjs";
+import { BATTLE_ROAD_SUPER, DROP_SUPER, UNRELEASED_SUPER, Unit } from "../../types.mjs";
+import { createEmbed } from "./createEmbed.mjs";
 
 export function embedPartialUnits(units: Unit[]): EmbedBuilder[] {
 	const embeds: EmbedBuilder[] = [];
 
-	const embed = new EmbedBuilder();
+	const embed = createEmbed(`**I also found partial match(es):**`);
 	embeds.push(embed);
-
-	embed.setTitle(`**I also found partial match(es):**`);
 
 	const names = units.map(unit => unit.display_name + unit.notes);
 	const also = `> ${names.join(", ")}`;
@@ -30,10 +27,6 @@ export function embedPartialUnits(units: Unit[]): EmbedBuilder[] {
 		}
 	}
 	embed.setDescription(also + notes);
-
-	if (isDevMode()) {
-		embed.setFooter({ text:"*dev mode*" });
-	}
 
 	return embeds;
 }

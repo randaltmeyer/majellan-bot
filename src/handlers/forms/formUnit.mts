@@ -1,11 +1,11 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } from "discord.js";
 import { AlmanacUnitEntry } from "../../data/AlliesAlmanac.mjs";
-import { getAllUnits } from "../../data/units/getAllUnits.mjs";
+import { getAll } from "../../data/json/getAll.mjs";
 
 // StringSelectMenuBuilder, StringSelectMenuOptionBuilder
 
 function getPrevUnit(id: string) {
-	const allUnits = getAllUnits();
+	const allUnits = getAll("unit");
 	const index = allUnits.findIndex(unit => unit.id === id);
 	if (index === 0) {
 		return allUnits[allUnits.length - 1];
@@ -13,7 +13,7 @@ function getPrevUnit(id: string) {
 	return allUnits[index - 1];
 }
 function getNextUnit(id: string) {
-	const allUnits = getAllUnits();
+	const allUnits = getAll("unit");
 	const index = allUnits.findIndex(unit => unit.id === id);
 	if (index === allUnits.length - 1) {
 		return allUnits[0];

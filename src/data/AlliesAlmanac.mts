@@ -1,5 +1,6 @@
-import { readJson } from "./readJson.mjs";
-import { writeJson } from "./writeJson.mjs";
+import { writeJson } from "./json/writeJson.mjs";
+import { getDataPath } from "./json/getDataPath.mjs";
+import { readJson } from "./json/readJson.mjs";
 
 export type AlmanacUnitEntry = {
 	id: string;
@@ -66,11 +67,13 @@ export class AlliesAlmanac {
 	}
 
 	public save(): void {
-		writeJson("almanacs", this.core.userId, this.core);
+		const filePath = getDataPath(`almanacs/${this.core.userId}.json`);
+		writeJson(this.core, { filePath });
 	}
 
 	public static getOrCreate(userId: string): AlliesAlmanac {
-		const core = readJson("almanacs", userId) ?? { userId };
+		const filePath = getDataPath(`almanacs/${userId}.json`);
+		const core = readJson<AlliesAlmanacCore>( { filePath }) ?? { userId };
 		return new AlliesAlmanac(core);
 	}
 }

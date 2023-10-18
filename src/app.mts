@@ -1,9 +1,11 @@
 import { Client, IntentsBitField } from "discord.js";
-import { readJson } from "./data/readJson.mjs";
 // import { handleInteractionCreate } from "./handlers/handleInteractionCreate.mjs";
 import { handleMessageCreate } from "./handlers/handleMessageCreate.mjs";
 import { handleReady } from "./handlers/handleReady.mjs";
 import { getBotId } from "./utils/getBotId.mjs";
+import { getDataPath } from "./data/json/getDataPath.mjs";
+import { readJson } from "./data/json/readJson.mjs";
+import { BotInfo } from "./types.mjs";
 
 const intents = [
 	IntentsBitField.Flags.DirectMessages,
@@ -19,7 +21,9 @@ client.once("ready", handleReady);
 client.on("messageCreate", handleMessageCreate);
 
 const id = getBotId();
-const { name, token } = readJson("bots", id) ?? { };
+const filePath = getDataPath(`bots/${id}.json`);
+const { name, token } = readJson<BotInfo>({ filePath }) ?? { };
+
 if (token) {
 	console.log(`Loading bot: ${name ?? id}`);
 	client.login(token).catch(console.error);

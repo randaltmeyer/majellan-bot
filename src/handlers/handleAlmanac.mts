@@ -1,15 +1,14 @@
 import { ButtonInteraction, EmbedBuilder, Interaction, Message, StringSelectMenuInteraction, userMention } from "discord.js";
 import { AlliesAlmanac } from "../data/AlliesAlmanac.mjs";
-import { getAllUnits } from "../data/units/getAllUnits.mjs";
 import { embedUnit } from "./embeds/embedUnit.mjs";
 import { formUnit } from "./forms/formUnit.mjs";
+import { getAll } from "../data/json/getAll.mjs";
 
 export async function handleAlmanac(messageOrInteraction: Message | Interaction): Promise<void> {
 	if ("customId" in messageOrInteraction) {
-		return handleAlmanacInteraction(messageOrInteraction as ButtonInteraction);
-	}
-	if ("mentions" in messageOrInteraction) {
-		return handleAlmanacMessage(messageOrInteraction);
+		await handleAlmanacInteraction(messageOrInteraction as ButtonInteraction);
+	}else if ("mentions" in messageOrInteraction) {
+		await handleAlmanacMessage(messageOrInteraction);
 	}
 }
 
@@ -55,7 +54,7 @@ function round(percent: number): number {
 
 async function createPayload(userId: string) {
 	const almanac = AlliesAlmanac.getOrCreate(userId);
-	const units = getAllUnits();
+	const units = getAll("unit");
 	const unitId = almanac.activeUnit() ?? units[0].id;
 	const unit = units.find(unit => unit.id === unitId) ?? units[0];
 	const unitIndex = units.indexOf(unit);

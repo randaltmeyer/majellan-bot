@@ -1,7 +1,9 @@
 import { Message } from "discord.js";
-import { readJson } from "../data/readJson.mjs";
+import { getDataPath } from "../data/json/getDataPath.mjs";
+import { readJson } from "../data/json/readJson.mjs";
+import { writeJson } from "../data/json/writeJson.mjs";
 import { updateUnits } from "../data/units/updateUnits.mjs";
-import { writeJson } from "../data/writeJson.mjs";
+import { UpdateInfo } from "../types.mjs";
 
 let updating = false;
 
@@ -15,7 +17,8 @@ export async function handleUpdate(message: Message, force: boolean): Promise<vo
 		message.reply(`*currently updating*`);
 	}
 
-	const updateInfo = readJson("", "updateInfo");
+	const filePath = getDataPath(`updateInfo.json`);
+	const updateInfo = readJson<UpdateInfo>({ filePath });
 	if (updateInfo && !force) {
 		const aDayAgo = Date.now() - 1000 * 60 * 60 * 24;
 		if (updateInfo.ts > aDayAgo) {
@@ -32,7 +35,7 @@ export async function handleUpdate(message: Message, force: boolean): Promise<vo
 
 	const updateTs = Date.now();
 
-	writeJson("", "updateInfo", { ts:updateTs, userId:message.author.id });
+	writeJson({ ts:updateTs, userId:message.author.id }, { filePath });
 
 	updating = false;
 

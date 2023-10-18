@@ -1,6 +1,4 @@
-data/almanacs
-data/bots
-data/cache
+data/
 deploy
 dist
 logs
@@ -10,4 +8,3 @@ types
 package-lock.json
 cache.zip
 .DS_Store
-updateinfo.json
