@@ -1,4 +1,5 @@
 import { Farmable } from "../../types.mjs";
+import { formatStageName } from "./formatStageName.mjs";
 
 function match(unitName: string, farmable: Farmable): boolean {
 	return farmable.enemy_display_name === unitName;
@@ -28,26 +29,9 @@ export function findAndFormatFarmables(unitName: string, farmables: Farmable[]):
 	});
 
 	return unitFarmables.map(({ stage_area_name, stage_area_group_name, stage_display_name, scout_probability, stamina_per_drop, is_best_drop_rate }) => {
-		const name = formatName({ stage_area_name, stage_area_group_name, stage_display_name } as Farmable);
+		const name = formatStageName([ stage_area_name, stage_area_group_name, stage_display_name ]);
 		const tada = is_best_drop_rate ? " :tada:" : "";
 		const stats = `Drop Rate: ${scout_probability}%; Avg Stam Per Drop: ${stamina_per_drop}`.trim();
 		return `${name}${tada}\n- ${stats}`;
 	});
-}
-
-function formatName({ stage_area_name, stage_area_group_name, stage_display_name }: Farmable): string {
-	const nameParts = [
-		stage_area_group_name,
-		stage_area_name,
-		stage_display_name
-	]
-		.filter(s => s)
-		.map(part => part.replace("Chapter ", "Ch. ").replace("Episode ", "Ep. ").trim());
-	if (nameParts[1]?.includes(nameParts[0])) {
-		nameParts.shift();
-	}
-	while (nameParts.length > 1 && nameParts[nameParts.length - 1].includes(nameParts[nameParts.length - 2])) {
-		nameParts.splice(nameParts.length - 2, 1);
-	}
-	return nameParts.join(" - ").trim();
 }

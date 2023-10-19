@@ -2,6 +2,8 @@ import { Interaction, Message } from "discord.js";
 import { isDevMode } from "./isDevMode.mjs";
 import { getDevServerId } from "./getDevServerId.mjs";
 import { getBotId } from "./getBotId.mjs";
+import { getDevChannelId } from "./getDevChannelId.mjs";
+import { getLiveChannelId } from "./getLiveChannelId.mjs";
 
 export function canRespond(messageOrInteraction: Message | Interaction): boolean {
 
@@ -9,10 +11,16 @@ export function canRespond(messageOrInteraction: Message | Interaction): boolean
 		return false;
 	}
 
-	if (isDevMode()) {
-		if (messageOrInteraction.guildId !== getDevServerId()) {
+	const isDevBot = isDevMode();
+	if (messageOrInteraction.guildId === getDevServerId()) {
+		if (isDevBot && messageOrInteraction.channelId !== getDevChannelId()) {
 			return false;
 		}
+		if (!isDevBot && messageOrInteraction.channelId !== getLiveChannelId()) {
+			return false;
+		}
+	}else if (isDevBot) {
+		return false;
 	}
 
 	if ("mentions" in messageOrInteraction) {
