@@ -13,11 +13,11 @@ export function canRespond(messageOrInteraction: Message | Interaction): boolean
 
 	const isDevBot = isDevMode();
 	if (messageOrInteraction.guildId === getDevServerId()) {
-		if (isDevBot && messageOrInteraction.channelId !== getDevChannelId()) {
-			return false;
+		if (messageOrInteraction.channelId === getDevChannelId()) {
+			return isDevBot;
 		}
-		if (!isDevBot && messageOrInteraction.channelId !== getLiveChannelId()) {
-			return false;
+		if (messageOrInteraction.channelId === getLiveChannelId()) {
+			return !isDevBot;
 		}
 	}else if (isDevBot) {
 		return false;
