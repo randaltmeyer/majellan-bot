@@ -1,8 +1,8 @@
 import { ButtonInteraction, EmbedBuilder, Interaction, Message, StringSelectMenuInteraction, userMention } from "discord.js";
 import { AlliesAlmanac } from "../data/AlliesAlmanac.mjs";
+import { getAll } from "../data/json/getAll.mjs";
 import { embedUnit } from "./embeds/embedUnit.mjs";
 import { formUnit } from "./forms/formUnit.mjs";
-import { getAll } from "../data/json/getAll.mjs";
 
 export async function handleAlmanac(messageOrInteraction: Message | Interaction): Promise<void> {
 	if ("customId" in messageOrInteraction) {
@@ -64,7 +64,7 @@ async function createPayload(userId: string) {
 
 	const content = `**Allies Almanac:** ${userMention(userId)}`;
 	const components = formUnit(userId, unitEntry);
-	const embeds = embedUnit(unit, true);
+	const embeds = embedUnit(unit, { almanac:true });
 
 	embeds.push(new EmbedBuilder().setDescription(`
 		**Unit:** ${unitIndex + 1} of ${units.length}

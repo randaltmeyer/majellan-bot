@@ -1,5 +1,5 @@
 import { Client, IntentsBitField } from "discord.js";
-// import { handleInteractionCreate } from "./handlers/handleInteractionCreate.mjs";
+import { handleInteractionCreate } from "./handlers/handleInteractionCreate.mjs";
 import { getDataPath } from "./data/json/getDataPath.mjs";
 import { readJson } from "./data/json/readJson.mjs";
 import { handleMessageCreate } from "./handlers/handleMessageCreate.mjs";
@@ -18,7 +18,7 @@ const intents = [
 const clientOptions = { intents };
 const client = new Client(clientOptions);
 client.once("ready", handleReady);
-// client.on("interactionCreate", handleInteractionCreate);
+client.on("interactionCreate", handleInteractionCreate);
 client.on("messageCreate", handleMessageCreate);
 
 const id = getBotId();

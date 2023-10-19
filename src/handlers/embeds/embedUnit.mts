@@ -2,7 +2,7 @@ import { EmbedBuilder } from "discord.js";
 import { EMOJI, UNRELEASED_SUPER, Unit } from "../../types.mjs";
 import { createEmbed } from "./createEmbed.mjs";
 
-export function embedUnit(unit: Unit, almanac = false): EmbedBuilder[] {
+export function embedUnit(unit: Unit, { almanac = false, battleRoads = true, farmQuests = true } ): EmbedBuilder[] {
 	const embeds: EmbedBuilder[] = [];
 
 	const embed = createEmbed(`**${unit.name}**`);
@@ -28,15 +28,17 @@ export function embedUnit(unit: Unit, almanac = false): EmbedBuilder[] {
 	if (unit.notes.includes(UNRELEASED_SUPER)) {
 		content += `\n*unit is new/unreleased*`;
 	}
+	content += `\n\n**Battle Roads:** ${unit.battleRoads?.length ?? 0}`;
+	content += `\n**Recruitment Stages:** ${unit.farmQuests?.length ?? 0}`;
 	embed.setDescription(content.trim());
 
 	if (!almanac) {
-		if (unit.farmQuests?.length) {
+		if (farmQuests && unit.farmQuests?.length) {
 			const farmEmbed = createEmbed("**Recruited From**");
 			farmEmbed.setDescription(unit.farmQuests.join("\n"));
 			embeds.push(farmEmbed);
 		}
-		if (unit.battleRoads?.length) {
+		if (battleRoads && unit.battleRoads?.length) {
 			const battleRoadEmbed = createEmbed("**Battle Roads**");
 			battleRoadEmbed.setDescription(unit.battleRoads.join("\n"));
 			embeds.push(battleRoadEmbed);

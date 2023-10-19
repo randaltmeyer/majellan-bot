@@ -29,7 +29,8 @@ export function canRespond(messageOrInteraction: Message | Interaction): boolean
 	}
 
 	if ("customId" in messageOrInteraction) {
-		return messageOrInteraction.customId.startsWith(`dqt|almanac|${messageOrInteraction.user.id}`);
+		const regex = /dqt\|(almanac|battleroads|farmquests)\|\d+/;
+		return regex.test(messageOrInteraction.customId);
 	}
 
 	return true;

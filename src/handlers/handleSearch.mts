@@ -1,24 +1,21 @@
 import { Message, userMention } from "discord.js";
+import { AlliesAlmanac } from "../data/AlliesAlmanac.mjs";
 import { FindUnitsResponse, findUnits } from "../data/units/findUnits.mjs";
 import { BATTLE_ROAD_SUPER, DROP_SUPER, UNRELEASED_SUPER } from "../types.mjs";
 import { cleanContent } from "../utils/cleanContent.mjs";
 import { debug, error } from "../utils/logger.mjs";
-import { embedPartialUnits } from "./embeds/embedPartialUnits.mjs";
-import { embedUnit } from "./embeds/embedUnit.mjs";
+import { prepByNameMessageArgs, prepClosestMessageArgs } from "./prepMessageArgs.mjs";
 
-async function respondByName(message: Message, { byName, also }: FindUnitsResponse): Promise<void> {
-	const content = `Hello, I found this unit:`;
-	const embeds = embedUnit(byName!);
-	if (also.length) {
-		embeds.push(...embedPartialUnits(also));
-	}
-	await message.reply({ content, embeds });
+async function respondByName(message: Message, findUnitsResponse: FindUnitsResponse): Promise<void> {
+	const almanac = AlliesAlmanac.getOrCreate(message.author.id);
+	const args = prepByNameMessageArgs(almanac, findUnitsResponse);
+	await message.reply(args);
 }
 
-async function respondClosest(message: Message, { closest }: FindUnitsResponse): Promise<void> {
-	const content = `Hello, this is the closest unit I could find:`;
-	const embeds = embedUnit(closest!);
-	await message.reply({ content, embeds });
+async function respondClosest(message: Message, findUnitsResponse: FindUnitsResponse): Promise<void> {
+	const almanac = AlliesAlmanac.getOrCreate(message.author.id);
+	const args = prepClosestMessageArgs(almanac, findUnitsResponse);
+	await message.reply(args);
 }
 
 async function respondSorry(message: Message, { content, byPartialName }: FindUnitsResponse): Promise<void> {

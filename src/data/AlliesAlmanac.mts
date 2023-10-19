@@ -25,10 +25,27 @@ export type AlliesAlmanacCore = {
 	activeUnit?: string;
 	/** unit entries */
 	units?: { [id: string]: AlmanacUnitEntry; };
+
+	showBattleRoads?: boolean;
+	showFarmQuests?: boolean;
 };
 
 export class AlliesAlmanac {
 	private constructor(private core: AlliesAlmanacCore) { }
+
+	public get userId() { return this.core.userId; }
+
+	public get showBattleRoads() { return this.core.showBattleRoads !== false; }
+	public toggleShowBattleRoads() {
+		this.core.showBattleRoads = !this.showBattleRoads;
+		this.save();
+	}
+
+	public get showFarmQuests() { return this.core.showFarmQuests !== false; }
+	public toggleShowFarmQuests() {
+		this.core.showFarmQuests = !this.showFarmQuests;
+		this.save();
+	}
 
 	private get units() { return this.core.units ?? (this.core.units = {}); }
 
