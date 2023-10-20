@@ -1,11 +1,9 @@
 import { RawEquipment } from "./RawEquipment.mjs";
 
 function testEquipment(unitSkillNames: string[], equipment: RawEquipment): boolean {
-	const regex = new RegExp(`^(${unitSkillNames.join("|")})\\b`);
+	const potencyRegex = new RegExp(`^(${unitSkillNames.join("|")})\\s+(Potency|Recovery|Brilliant)\\s+\\+`, "i");
 	const { slot_1, slot_2, slot_3 } = equipment?.equipment_alchemy_slots ?? {};
-	return !!slot_1?.find(alc => regex.test(alc.passive_skill.skill_name))
-		|| !!slot_2?.find(alc => regex.test(alc.passive_skill.skill_name))
-		|| !!slot_3?.find(alc => regex.test(alc.passive_skill.skill_name));
+	return !![slot_1, slot_2, slot_3].find(slot => slot?.find(alc => potencyRegex.test(String(alc?.passive_skill?.skill_name))));
 }
 
 export function hasEquipment(unitSkillNames: string[], equipment: RawEquipment[]): boolean {
