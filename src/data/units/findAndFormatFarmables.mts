@@ -1,4 +1,5 @@
 import { Farmable } from "../../types.mjs";
+import { round } from "../../utils/round.mjs";
 import { formatStageName } from "./formatStageName.mjs";
 
 function match(unitName: string, farmable: Farmable): boolean {
@@ -31,7 +32,7 @@ export function findAndFormatFarmables(unitName: string, farmables: Farmable[]):
 	return unitFarmables.map(({ stage_area_name, stage_area_group_name, stage_display_name, scout_probability, stamina_per_drop, is_best_drop_rate }) => {
 		const name = formatStageName([ stage_area_name, stage_area_group_name, stage_display_name ]);
 		const tada = is_best_drop_rate ? " :tada:" : "";
-		const stats = `Drop Rate: ${scout_probability}%; Avg Stam Per Drop: ${stamina_per_drop}`.trim();
+		const stats = `Drop Rate: ${round(scout_probability, 1)}%; Avg Stam Per Drop: ${round(stamina_per_drop, 1)}`.trim();
 		return `${name}${tada}\n- ${stats}`;
 	});
 }
