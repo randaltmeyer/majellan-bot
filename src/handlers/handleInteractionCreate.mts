@@ -8,7 +8,7 @@ import { prepByNameMessageArgs, prepClosestMessageArgs } from "./prepMessageArgs
 async function handleBattleRoads(interaction: ButtonInteraction, userId: Snowflake): Promise<void> {
 	const almanac = AlliesAlmanac.getOrCreate(userId);
 	almanac.toggleShowBattleRoads();
-	const unitName = interaction.message?.embeds[0].title?.slice(2, -2);
+	const unitName = interaction.message?.embeds[0]?.title?.slice(2, -2);
 	if (unitName) {
 		const response = findUnits(unitName);
 		const args = interaction.message.content.includes("closest")
@@ -22,7 +22,7 @@ async function handleBattleRoads(interaction: ButtonInteraction, userId: Snowfla
 async function handleFarmQuests(interaction: ButtonInteraction, userId: Snowflake): Promise<void> {
 	const almanac = AlliesAlmanac.getOrCreate(userId);
 	almanac.toggleShowFarmQuests();
-	const unitName = interaction.message?.embeds[0].title?.slice(2, -2);
+	const unitName = interaction.message?.embeds[0]?.title?.slice(2, -2);
 	if (unitName) {
 		const response = findUnits(unitName);
 		const args = interaction.message.content.includes("closest")
