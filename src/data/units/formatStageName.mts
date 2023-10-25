@@ -8,8 +8,9 @@ export function formatStageName(nameParts: string[]): string {
 	while (filtered.length > 1 && filtered[filtered.length - 1].includes(filtered[filtered.length - 2])) {
 		filtered.splice(filtered.length - 2, 1);
 	}
+	const diffRegex = /(Normal|Very Hard|Hard)\)?$/;
 	for (let i = 0; i < filtered.length - 1; i++) {
-		const difficulty = (filtered[i].match(/(Normal|Very Hard|Hard)\)?$/) ?? [])[1];
+		const difficulty = (diffRegex.exec(filtered[i]) ?? [])[1];
 		if (difficulty && filtered[i+1].startsWith(difficulty)) {
 			filtered[i+1] = filtered[i+1].slice(difficulty.length).trim();
 		}
