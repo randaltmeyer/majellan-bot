@@ -16,7 +16,7 @@
     "prereset": "npm run delete",
     "reset": "npm start",
 
-    "predelete-prod": "npm run build",
+    "predelete-prod": "npm run update",
     "delete-prod": "npm run delete",
     "prestart-prod": "npm run delete-prod",
     "start-prod": "pm2 start ecosystem.config.cjs --env production",
