@@ -18,6 +18,7 @@ export function cleanContent(message: Message): string {
 	message.mentions.channels.forEach(channel => scrub("#", getChannelName(channel)));
 	message.mentions.crosspostedChannels.forEach(channel => scrub("#", getChannelName(channel)));
 	content = content.replace(/:\w+:/g, "");
+	content = content.replace(/armor/g, armor => armor[0] + "rmour");
 	return content.replace(/\s+/g, " ").trim();
 
 	function scrub(prefix: "@" | "#", ...names: (Optional<string>)[]) {

@@ -15,21 +15,21 @@ async function respondByName(message: Message, findResponse: FindResponse<any>):
 	await message.reply(args);
 }
 
-async function respondClosest(message: Message, findResponse: FindResponse<"Unit">): Promise<void> {
+async function respondClosest(message: Message, findResponse: FindResponse<any>): Promise<void> {
 	const almanac = AlliesAlmanac.getOrCreate(message.author.id);
 	const args = prepClosestMessageArgs(almanac, findResponse);
 	await message.reply(args);
 }
 
-async function respondSorry(message: Message, { content, byPartialName }: FindResponse<"Unit">): Promise<void> {
-	const sorry = `Sorry, I couldn't find a unit using:\n> ${content}`;
+async function respondSorry(message: Message, unitResponse: FindResponse<"Unit">, equipmentResponse: FindResponse<"Equipment">): Promise<void> {
+	const sorry = `Sorry, I couldn't find a unit nor equipment using:\n> ${unitResponse.content}`;
 	let but = "";
 	let notes = "";
 
-	const byP = byPartialName.length;
-	if (byP) {
-		const names = byPartialName.map(unit => unit.name + unit.notes);
-		but = `\n\nI did find partial match(es):\n> ${names.join(", ")}`;
+	const unitByP = unitResponse.byPartialName.length;
+	if (unitByP) {
+		const names = unitResponse.byPartialName.map(unit => unit.name + unit.notes);
+		but = `\n\nI did find partial unit match(es):\n> ${names.join(", ")}`;
 
 		const unreleased = but.includes(UNRELEASED_SUPER),
 			hasDrops = but.includes(DROP_SUPER),
@@ -47,6 +47,13 @@ async function respondSorry(message: Message, { content, byPartialName }: FindRe
 			}
 		}
 	}
+
+	const equipmentByP = equipmentResponse.byPartialName.length;
+	if (equipmentByP) {
+		const names = equipmentResponse.byPartialName.map(eq => eq.equipment_display_name);
+		but += `\n\nI did find partial equipment match(es):\n> ${names.join(", ")}`;
+	}
+
 	await message.reply(sorry + but + notes);
 }
 function unique<T>(value: T, index: number, array: T[]) {
@@ -92,11 +99,14 @@ export async function handleSearch(message: Message): Promise<void> {
 			const relatedUnit = getAll("unit").find(unit => unit.equipment.includes(eqName))?.name;
 			await respondByName(message, { ...equipmentResponse, relatedUnit });
 
-		}else if (unitResponse.closest) {
+		}else if (unitResponse.closest && !equipmentResponse.byPartialName.length) {
 			await respondClosest(message, unitResponse);
 
+		}else if (equipmentResponse.closest && !unitResponse.byPartialName.length) {
+			await respondClosest(message, equipmentResponse);
+
 		}else {
-			await respondSorry(message, unitResponse);
+			await respondSorry(message, unitResponse, equipmentResponse);
 		}
 	}catch(ex) {
 		error(ex);
