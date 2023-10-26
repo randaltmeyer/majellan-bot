@@ -4,11 +4,13 @@ import { findUnits } from "../data/units/findUnits.mjs";
 import { canRespond } from "../utils/canRespond.mjs";
 import { handleAlmanac } from "./handleAlmanac.mjs";
 import { prepByNameMessageArgs, prepClosestMessageArgs } from "./prepMessageArgs.mjs";
+import { findEquipment } from "../data/units/findEquipment.mjs";
+import { FindResponse } from "../data/units/FindResponse.mjs";
 
 async function handleBattleRoads(interaction: ButtonInteraction, userId: Snowflake): Promise<void> {
 	const almanac = AlliesAlmanac.getOrCreate(userId);
 	almanac.toggleShowBattleRoads();
-	const unitName = interaction.message?.embeds[0]?.title?.slice(2, -2);
+	const unitName = interaction.message?.embeds[0]?.title?.split("**")[1];
 	if (unitName) {
 		const response = findUnits(unitName);
 		const args = interaction.message.content.includes("closest")
@@ -19,14 +21,22 @@ async function handleBattleRoads(interaction: ButtonInteraction, userId: Snowfla
 	// interaction.deleteReply();
 }
 
+function getResponse(name: string): FindResponse<any> {
+	const equipmentResponse = findEquipment(name);
+	if (equipmentResponse.byName) {
+		return equipmentResponse;
+	}
+	return findUnits(name);
+}
+
 async function handleFarmQuests(interaction: ButtonInteraction, userId: Snowflake): Promise<void> {
 	const almanac = AlliesAlmanac.getOrCreate(userId);
 	almanac.toggleShowFarmQuests();
-	const unitName = interaction.message?.embeds[0]?.title?.slice(2, -2);
-	if (unitName) {
-		const response = findUnits(unitName);
+	const name = interaction.message?.embeds[0]?.title?.split("**")[1];
+	if (name) {
+		const response = getResponse(name);
 		const args = interaction.message.content.includes("closest")
-			? prepClosestMessageArgs(almanac, response)
+			? prepClosestMessageArgs(almanac, response as FindResponse<"Unit">)
 			: prepByNameMessageArgs(almanac, response);
 		await interaction.message.edit(args);
 	}

@@ -10,10 +10,15 @@ import { findAndFormatEquipment, hasEquipment } from "./findAndFormatEquipment.m
 import { findAndFormatFarmables, hasFarmables } from "./findAndFormatFarmables.mjs";
 
 export async function updateUnits(): Promise<Unit[]> {
+	// await getOrFetch("accolade");
 	const areas = await getOrFetch("area");
-	const farmables = await getOrFetch("farmable");
+	// await getOrFetch("area_group");
 	const equipment = await getOrFetch("equipment");
-	const rawUnits = await getOrFetch("rawUnit");
+	const farmables = await getOrFetch("farmable");
+	// await getOrFetch("shop");
+	// await getOrFetch("stage");
+	// await getOrFetch("tnt");
+	const rawUnits = await getOrFetch("unit");
 
 	const pLogger = new PercentLogger(`Converting Units`, rawUnits.length);
 	const units = rawUnits.map(rawUnit => {

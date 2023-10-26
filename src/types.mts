@@ -1,4 +1,5 @@
 import { Snowflake } from "discord.js";
+import { RawEquipment } from "./data/units/RawEquipment.mjs";
 
 export type BotInfo = {
 	id: Snowflake,
@@ -78,21 +79,24 @@ export type Area = {
 	}[];
 };
 
+export type Accolade = { id:string; };
+export type AreaGroup = { id:string; };
+export type Shop = { id:string; };
+export type Stage = { id:string; };
+export type Tnt = { id:string; };
+
 export type Farmable = {
 	stage_area_name: string;
 	stage_area_group_name: string;
 	stage_display_name: string;
 	enemy_display_name: string;
 	scout_probability: number;
+	stage_stamina_cost: number;
 	stamina_per_drop: number;
 	is_best_drop_rate: boolean;
 };
 
-export type Equipment = {
-	id: string;
-	equipment_display_name: string;
-	equipment_category: string;
-};
+export type Equipment = RawEquipment;
 
 export type Unit = {
 	id: string;

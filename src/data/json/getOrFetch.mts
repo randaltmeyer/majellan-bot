@@ -1,4 +1,4 @@
-import { Area, Farmable } from "../../types.mjs";
+import { Accolade, Area, AreaGroup, Farmable, Shop, Stage, Tnt } from "../../types.mjs";
 import { isDevMode } from "../../utils/isDevMode.mjs";
 import { errorReturnArray } from "../../utils/logger.mjs";
 import { RawEquipment } from "../units/RawEquipment.mjs";
@@ -7,19 +7,23 @@ import { clearMemCache } from "./getAll.mjs";
 import { getDataPath } from "./getDataPath.mjs";
 import { getOrFetchJson } from "./getOrFetchJson.mjs";
 
-type FetchableType = "area" | "farmable" | "equipment" | "rawUnit";
+type FetchableType = "accolade" | "area" | "area_group" | "equipment" | "farmable" | "unit" | "shop" | "stage" | "tnt";
 
+export async function getOrFetch(type: "accolade"): Promise<Accolade[]>;
 export async function getOrFetch(type: "area"): Promise<Area[]>;
-export async function getOrFetch(type: "farmable"): Promise<Farmable[]>;
+export async function getOrFetch(type: "area_group"): Promise<AreaGroup[]>;
 export async function getOrFetch(type: "equipment"): Promise<RawEquipment[]>;
-export async function getOrFetch(type: "rawUnit"): Promise<RawUnit[]>;
+export async function getOrFetch(type: "farmable"): Promise<Farmable[]>;
+export async function getOrFetch(type: "shop"): Promise<Shop[]>;
+export async function getOrFetch(type: "stage"): Promise<Stage[]>;
+export async function getOrFetch(type: "tnt"): Promise<Tnt[]>;
+export async function getOrFetch(type: "unit"): Promise<RawUnit[]>;
 export async function getOrFetch<T>(type: FetchableType): Promise<T[]> {
-	const prefix = type === "rawUnit" ? "unit" : type;
-	const url = `https://drackyknowledge.com/api/${prefix}`;
-	const filePath = getDataPath(`${type}.json`);
+	const url = `https://drackyknowledge.com/api/${type}`;
+	const filePath = getDataPath(`${type === "unit" ? "rawUnit" : type}.json`);
 	const skipRead = !isDevMode();
 	const data = await getOrFetchJson(url, { filePath, skipRead }).catch(errorReturnArray);
-	if (type !== "rawUnit") {
+	if (type !== "unit") {
 		clearMemCache(type);
 	}
 	return data;

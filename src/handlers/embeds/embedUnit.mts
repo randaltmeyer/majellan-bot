@@ -28,13 +28,13 @@ export function embedUnit(unit: Unit, { almanac = false, battleRoads = true, far
 	if (unit.notes.includes(UNRELEASED_SUPER)) {
 		content += `\n*unit is new/unreleased*`;
 	}
-	content += `\n\n**Battle Roads:** ${unit.battleRoads?.length ?? 0}`;
-	content += `\n**Recruitment Stages:** ${unit.farmQuests?.length ?? 0}`;
+	content += `\n\n**Farm Stages:** ${unit.farmQuests?.length ?? 0}`;
+	content += `\n**Battle Roads:** ${unit.battleRoads?.length ?? 0}`;
 	embed.setDescription(content.trim());
 
 	if (!almanac) {
 		if (farmQuests && unit.farmQuests?.length) {
-			const farmEmbed = createEmbed("**Recruited From**");
+			const farmEmbed = createEmbed("**Farm Stages**");
 			farmEmbed.setDescription(unit.farmQuests.join("\n"));
 			embeds.push(farmEmbed);
 		}

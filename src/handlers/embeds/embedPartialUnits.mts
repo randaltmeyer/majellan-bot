@@ -20,7 +20,7 @@ export function embedPartialUnits(units: Unit[]): EmbedBuilder[] {
 			notes += `\n*${UNRELEASED_SUPER} new/unreleased*`;
 		}
 		if (hasDrops) {
-			notes += `\n*${DROP_SUPER} recruitable*`;
+			notes += `\n*${DROP_SUPER} farmable*`;
 		}
 		if (hasBattleRoads) {
 			notes += `\n*${BATTLE_ROAD_SUPER} battle roads*`;
