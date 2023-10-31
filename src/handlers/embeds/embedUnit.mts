@@ -5,7 +5,7 @@ import { createEmbed } from "./createEmbed.mjs";
 export function embedUnit(unit: Unit, { almanac = false, battleRoads = true, farmQuests = true } ): EmbedBuilder[] {
 	const embeds: EmbedBuilder[] = [];
 
-	const embed = createEmbed(`**${unit.name}**`);
+	const embed = createEmbed(`**${unit.name}**`, true);
 	embeds.push(embed);
 
 	embed.setThumbnail(`https://drackyknowledge.com/${unit.icon}`);

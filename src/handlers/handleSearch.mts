@@ -8,6 +8,7 @@ import { prepByNameMessageArgs, prepClosestMessageArgs } from "./prepMessageArgs
 import { getAll } from "../data/json/getAll.mjs";
 import { findEquipment } from "../data/units/findEquipment.mjs";
 import { FindResponse } from "../data/units/FindResponse.mjs";
+import { isDevMode } from "../utils/isDevMode.mjs";
 
 async function respondByName(message: Message, findResponse: FindResponse<any>): Promise<void> {
 	const almanac = AlliesAlmanac.getOrCreate(message.author.id);
@@ -54,7 +55,12 @@ async function respondSorry(message: Message, unitResponse: FindResponse<"Unit">
 		but += `\n\nI did find partial equipment match(es):\n> ${names.join(", ")}`;
 	}
 
-	await message.reply(sorry + but + notes);
+	let footer = `\n\n[Majellan Bot Home](https://discord.gg/nYwdFTND4E)`;
+	if (isDevMode()) {
+		footer += `\ndev mode`;
+	}
+
+	await message.reply(sorry + but + notes + footer);
 }
 function unique<T>(value: T, index: number, array: T[]) {
 	return value && array.indexOf(value) === index;

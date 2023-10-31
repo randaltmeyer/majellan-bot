@@ -7,7 +7,7 @@ export function embedEquipment(equipment: Equipment, { almanac = false, farmQues
 
 	const rarity = equipment.equipment_rank.toLowerCase() as keyof typeof EMOJI;
 
-	const embed = createEmbed(`**${equipment.equipment_display_name}** ${EMOJI[rarity]}`);
+	const embed = createEmbed(`**${equipment.equipment_display_name}** ${EMOJI[rarity]}`, true);
 	embeds.push(embed);
 
 	embed.setThumbnail(`https://drackyknowledge.com/${equipment.equipment_icon}`);
