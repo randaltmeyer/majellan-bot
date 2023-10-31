@@ -1,4 +1,23 @@
 {
+  "name": "majellan-bot",
+  "version": "1.0.0",
+  "description": "A Discord bot for searching Dragon Quest Tact information.",
+  "keywords": ["discord","bot","dqt","dragon","quest","tact","unit","search"],
+  "homepage": "https://github.com/randaltmeyer/majellan-bot/#readme",
+  "bugs": {
+    "url": "https://github.com/randaltmeyer/majellan-bot/issues",
+    "email": "randal.t.meyer+majellan-bot@gmail.com"
+  },
+  "license": "ISC",
+  "author": "Randal Meyer <randal.t.meyer@gmail.com> (http://randaltmeyer.com)",
+  "funding": {
+    "type": "paypal",
+    "url": "https://www.paypal.com/paypalme/RandalTMeyer"
+  },
+  "repository": "github:randaltmeyer/majellan-bot",
+
+  "type":"module",
+
   "dependencies": {
     "discord.js": "^14.11.0",
     "follow-redirects": "^1.15.2"
