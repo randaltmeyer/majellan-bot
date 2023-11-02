@@ -1,6 +1,6 @@
-import { updateUnits } from "./data/units/updateUnits.mjs";
+import { updateData } from "./data/updateData.mjs";
 
 async function main() {
-	await updateUnits();
+	await updateData();
 }
 main();

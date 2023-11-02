@@ -1,4 +1,4 @@
-import { RawEquipment } from "./RawEquipment.mjs";
+import { RawEquipment } from "../equipment/RawEquipment.mjs";
 
 function testEquipment(unitSkillNames: string[], equipment: RawEquipment): boolean {
 	const potencyRegex = new RegExp(`^(${unitSkillNames.join("|")})\\s+(Potency|Recovery|Brilliant)\\s+\\+`, "i");

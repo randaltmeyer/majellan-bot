@@ -1,6 +1,6 @@
 import { normalizeString } from "../../utils/normalizeString.mjs";
 import { getAll } from "../json/getAll.mjs";
-import { FindResponse } from "./FindResponse.mjs";
+import { FindResponse } from "../FindResponse.mjs";
 
 export function findEquipment(content: string): FindResponse<"Equipment"> {
 	// clean the input to match better

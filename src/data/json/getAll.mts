@@ -1,5 +1,5 @@
 import { Accolade, Area, AreaGroup, Farmable, Shop, Stage, Tnt, Unit } from "../../types.mjs";
-import { RawEquipment } from "../units/RawEquipment.mjs";
+import { RawEquipment } from "../equipment/RawEquipment.mjs";
 import { getDataPath } from "./getDataPath.mjs";
 import { readJson } from "./readJson.mjs";
 

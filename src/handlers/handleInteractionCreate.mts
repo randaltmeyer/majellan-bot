@@ -4,8 +4,8 @@ import { findUnits } from "../data/units/findUnits.mjs";
 import { canRespond } from "../utils/canRespond.mjs";
 import { handleAlmanac } from "./handleAlmanac.mjs";
 import { prepByNameMessageArgs, prepClosestMessageArgs } from "./prepMessageArgs.mjs";
-import { findEquipment } from "../data/units/findEquipment.mjs";
-import { FindResponse } from "../data/units/FindResponse.mjs";
+import { findEquipment } from "../data/equipment/findEquipment.mjs";
+import { FindResponse } from "../data/FindResponse.mjs";
 
 async function handleBattleRoads(interaction: ButtonInteraction, userId: Snowflake): Promise<void> {
 	const almanac = AlliesAlmanac.getOrCreate(userId);

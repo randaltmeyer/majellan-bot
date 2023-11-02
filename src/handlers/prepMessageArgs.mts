@@ -1,9 +1,10 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Snowflake } from "discord.js";
 import { AlliesAlmanac } from "../data/AlliesAlmanac.mjs";
-import { FindResponse } from "../data/units/FindResponse.mjs";
+import { FindResponse } from "../data/FindResponse.mjs";
 import { embedEquipment } from "./embeds/embedEquipment.mjs";
 import { embedPartialUnits } from "./embeds/embedPartialUnits.mjs";
 import { embedUnit } from "./embeds/embedUnit.mjs";
+import { embedStage } from "./embeds/embedStage.mjs";
 
 type MessageArgs = { content:string; embeds:EmbedBuilder[]; components:ActionRowBuilder<any>[] };
 
@@ -45,19 +46,24 @@ function prepByNameMessageArgsEquipment(_almanac: AlliesAlmanac, { byName, relat
 	const content = `Hello, I found this equipment:`;
 
 	const embeds = embedEquipment(byName!, { farmQuests:false, relatedUnit });
-	// const embeds = embedEquipment(byName, { farmQuests:almanac.showFarmQuests });
-
-	// const farmQuests = createFarmQuestsButton(almanac.userId, almanac.showFarmQuests, false);
-
-	// const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(farmQuests);
 
 	return { content, embeds, components:[] };
-	// return { content, embeds, components:[buttonRow] };
 }
 
-export function prepByNameMessageArgs(almanac: AlliesAlmanac, response: FindResponse<"Unit" | "Equipment">): MessageArgs {
+function prepByNameMessageArgsStage(_almanac: AlliesAlmanac, { byName }: FindResponse<"Stage">): MessageArgs {
+	const content = `Hello, I found this stage:`;
+
+	const embeds = embedStage(byName!);
+
+	return { content, embeds, components:[] };
+}
+
+export function prepByNameMessageArgs(almanac: AlliesAlmanac, response: FindResponse<"Unit" | "Equipment" | "Stage">): MessageArgs {
 	if (response.type === "Unit") {
 		return prepByNameMessageArgsUnit(almanac, response as FindResponse<"Unit">);
+	}
+	if (response.type === "Stage") {
+		return prepByNameMessageArgsStage(almanac, response as FindResponse<"Stage">);
 	}
 	return prepByNameMessageArgsEquipment(almanac, response as FindResponse<"Equipment">);
 }
@@ -79,13 +85,7 @@ function prepClosestMessageArgsEquipment(_almanac: AlliesAlmanac, { closest }: F
 	const content = `Hello, this is the closest equipment I could find:`;
 	const embeds = embedEquipment(closest!, { farmQuests:false });
 
-	// const farmQuests = createFarmQuestsButton(almanac.userId, almanac.showFarmQuests, !closest?.farmQuests.length);
-
-	// const buttonRow = new ActionRowBuilder<ButtonBuilder>()
-	// 	.addComponents(battleRoads, farmQuests);
-
 	return { content, embeds, components:[] };
-	// return { content, embeds, components:[buttonRow] };
 }
 
 export function prepClosestMessageArgs(almanac: AlliesAlmanac, response: FindResponse<any>): MessageArgs {

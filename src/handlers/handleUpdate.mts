@@ -2,7 +2,7 @@ import { Message } from "discord.js";
 import { getDataPath } from "../data/json/getDataPath.mjs";
 import { readJson } from "../data/json/readJson.mjs";
 import { writeJson } from "../data/json/writeJson.mjs";
-import { updateUnits } from "../data/units/updateUnits.mjs";
+import { updateData } from "../data/updateData.mjs";
 import { UpdateInfo } from "../types.mjs";
 import { error } from "../utils/logger.mjs";
 
@@ -32,7 +32,7 @@ export async function handleUpdate(message: Message, force: boolean): Promise<vo
 
 	updating = true;
 
-	await updateUnits().catch(error);
+	await updateData().catch(error);
 
 	const updateTs = Date.now();
 

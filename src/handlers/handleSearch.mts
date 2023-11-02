@@ -1,88 +1,14 @@
 import { Message, userMention } from "discord.js";
-import { AlliesAlmanac } from "../data/AlliesAlmanac.mjs";
+import { getAll } from "../data/json/getAll.mjs";
+import { findEquipment } from "../data/equipment/findEquipment.mjs";
+import { findStage } from "../data/stages/findStage.mjs";
 import { findUnits } from "../data/units/findUnits.mjs";
-import { BATTLE_ROAD_SUPER, DROP_SUPER, UNRELEASED_SUPER } from "../types.mjs";
 import { cleanContent } from "../utils/cleanContent.mjs";
 import { debug, error } from "../utils/logger.mjs";
-import { prepByNameMessageArgs, prepClosestMessageArgs } from "./prepMessageArgs.mjs";
-import { getAll } from "../data/json/getAll.mjs";
-import { findEquipment } from "../data/units/findEquipment.mjs";
-import { FindResponse } from "../data/units/FindResponse.mjs";
-import { isDevMode } from "../utils/isDevMode.mjs";
-
-async function respondByName(message: Message, findResponse: FindResponse<any>): Promise<void> {
-	const almanac = AlliesAlmanac.getOrCreate(message.author.id);
-	const args = prepByNameMessageArgs(almanac, findResponse);
-	await message.reply(args);
-}
-
-async function respondClosest(message: Message, findResponse: FindResponse<any>): Promise<void> {
-	const almanac = AlliesAlmanac.getOrCreate(message.author.id);
-	const args = prepClosestMessageArgs(almanac, findResponse);
-	await message.reply(args);
-}
-
-async function respondSorry(message: Message, unitResponse: FindResponse<"Unit">, equipmentResponse: FindResponse<"Equipment">): Promise<void> {
-	const sorry = `Sorry, I couldn't find a unit nor equipment using:\n> ${unitResponse.content}`;
-	let but = "";
-	let notes = "";
-
-	const unitByP = unitResponse.byPartialName.length;
-	if (unitByP) {
-		const names = unitResponse.byPartialName.map(unit => unit.name + unit.notes);
-		but = `\n\nI did find partial unit match(es):\n> ${names.join(", ")}`;
-
-		const unreleased = but.includes(UNRELEASED_SUPER),
-			hasDrops = but.includes(DROP_SUPER),
-			hasBattleRoads = but.includes(BATTLE_ROAD_SUPER);
-		if (unreleased || hasDrops || hasBattleRoads) {
-			notes += "\n";
-			if (unreleased) {
-				notes += `\n*${UNRELEASED_SUPER} new/unreleased*`;
-			}
-			if (hasDrops) {
-				notes += `\n*${DROP_SUPER} farmable*`;
-			}
-			if (hasBattleRoads) {
-				notes += `\n*${BATTLE_ROAD_SUPER} battle roads*`;
-			}
-		}
-	}
-
-	const equipmentByP = equipmentResponse.byPartialName.length;
-	if (equipmentByP) {
-		const names = equipmentResponse.byPartialName.map(eq => eq.equipment_display_name);
-		but += `\n\nI did find partial equipment match(es):\n> ${names.join(", ")}`;
-	}
-
-	let footer = `\n\n[Majellan Bot Home](https://discord.gg/nYwdFTND4E)`;
-	if (isDevMode()) {
-		footer += `\ndev mode`;
-	}
-
-	await message.reply(sorry + but + notes + footer);
-}
-function unique<T>(value: T, index: number, array: T[]) {
-	return value && array.indexOf(value) === index;
-}
-function sortAsString(a: string, b: string): -1 | 0 | 1 {
-	if (a !== b) {
-		return a < b ? -1 : 1;
-	}
-	return 0;
-}
-async function respondFarmQuests(_message: Message): Promise<void> {
-	const farmables = getAll("farmable");
-	const groupNames = farmables
-		.map(f => f.stage_area_group_name?.replace(/\s*(:\s*(Very Hard|Hard|Normal)|\((Very Hard|Hard|Normal)\))\s*$/, ""))
-		.filter(unique)
-		.sort(sortAsString);
-	// const areaNames = farmables.map(f => f.stage_area_name).filter(unique).sort(sortAsString);
-	// const stageNames = farmables.map(f => f.stage_display_name).filter(unique).sort(sortAsString);
-	debug({groupNames});
-	// debug({areaNames});
-	// debug({stageNames});
-}
+import { respondByName } from "./responders/respondByName.mjs";
+import { respondClosest } from "./responders/respondClosest.mjs";
+import { respondFarmQuests } from "./responders/respondFarmQuests.mjs";
+import { respondSorry } from "./responders/respondSorry.mjs";
 
 export async function handleSearch(message: Message): Promise<void> {
 	const content = cleanContent(message);
@@ -97,6 +23,7 @@ export async function handleSearch(message: Message): Promise<void> {
 	try {
 		const unitResponse = findUnits(content);
 		const equipmentResponse = findEquipment(content);
+		const stageResponse = findStage(content);
 		if (unitResponse.byName) {
 			await respondByName(message, unitResponse);
 
@@ -105,14 +32,20 @@ export async function handleSearch(message: Message): Promise<void> {
 			const relatedUnit = getAll("unit").find(unit => unit.equipment.includes(eqName))?.name;
 			await respondByName(message, { ...equipmentResponse, relatedUnit });
 
-		}else if (unitResponse.closest && !equipmentResponse.byPartialName.length) {
+		}else if (stageResponse.byName) {
+			await respondByName(message, stageResponse);
+
+		}else if (unitResponse.closest && !equipmentResponse.byPartialName.length && !stageResponse.byPartialName.length) {
 			await respondClosest(message, unitResponse);
 
-		}else if (equipmentResponse.closest && !unitResponse.byPartialName.length) {
+		}else if (equipmentResponse.closest && !unitResponse.byPartialName.length && !stageResponse.byPartialName.length) {
 			await respondClosest(message, equipmentResponse);
 
+		}else if (stageResponse.closest && !unitResponse.byPartialName.length && !equipmentResponse.byPartialName.length) {
+			await respondClosest(message, stageResponse);
+
 		}else {
-			await respondSorry(message, unitResponse, equipmentResponse);
+			await respondSorry(message, unitResponse, equipmentResponse, stageResponse);
 		}
 	}catch(ex) {
 		error(ex);

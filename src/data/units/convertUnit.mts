@@ -31,6 +31,7 @@ export function convertUnit(raw: RawUnit): Unit {
 		farmQuests: [],
 		battleRoads: [],
 		equipment: [],
-		skillNames: parseSkillNames(raw)
+		skillNames: parseSkillNames(raw),
+		shopGoods: []
 	};
 }

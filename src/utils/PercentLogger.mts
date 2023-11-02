@@ -52,4 +52,16 @@ export class PercentLogger {
 			verbose(`${this.label} (${this.total}) ... ${force100 ? 100 : this.percentComplete}%`);
 		}
 	}
+
+	public static forEach<T>(label: string, array: T[], callbackfn: (value: T, index: number, array: T[]) => unknown, interval?: number): void {
+		this.map(label, array, callbackfn, interval);
+	}
+	public static map<T, U>(label: string, array: T[], callbackfn: (value: T, index: number, array: T[]) => U, interval?: number): U[] {
+		const pLogger = new PercentLogger(label, array.length, interval);
+		return array.map((value, index, array) => {
+			const out = callbackfn(value, index, array);
+			pLogger.increment();
+			return out;
+		});
+	}
 }

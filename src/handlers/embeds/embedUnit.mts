@@ -28,8 +28,11 @@ export function embedUnit(unit: Unit, { almanac = false, battleRoads = true, far
 	if (unit.notes.includes(UNRELEASED_SUPER)) {
 		content += `\n*unit is new/unreleased*`;
 	}
-	content += `\n\n**Farm Stages:** ${unit.farmQuests?.length ?? 0}`;
+	content += `\n\n**Farm Stages:** ${unit.farmQuests?.filter(s => s.startsWith("-")).length ?? 0}`;
 	content += `\n**Battle Roads:** ${unit.battleRoads?.length ?? 0}`;
+	if (unit.shopGoods?.length) {
+		content += `\n**Swap Shop:** ${unit.shopGoods?.join(", ")}`;
+	}
 	embed.setDescription(content.trim());
 
 	if (!almanac) {
@@ -43,6 +46,11 @@ export function embedUnit(unit: Unit, { almanac = false, battleRoads = true, far
 			battleRoadEmbed.setDescription(unit.battleRoads.join("\n"));
 			embeds.push(battleRoadEmbed);
 		}
+		// if (shopGoods && unit.shopGoods?.length) {
+		// 	const shopGoodsEmbed = createEmbed("**Swap Shops**");
+		// 	shopGoodsEmbed.setDescription(unit.shopGoods.join("\n"));
+		// 	embeds.push(shopGoodsEmbed);
+		// }
 	}
 	return embeds;
 }

@@ -1,61 +1,125 @@
-import { Farmable } from "../../types.mjs";
+import { Farmable, Stage, StageDrop } from "../../types.mjs";
+// import { debug } from "../../utils/logger.mjs";
 import { round } from "../../utils/round.mjs";
-import { formatStageName } from "./formatStageName.mjs";
+import { formatStageName } from "../stages/formatStageName.mjs";
 
-function match(unitName: string, farmable: Farmable): boolean {
+function matchFarmable(unitName: string, farmable: Farmable): boolean {
 	return farmable.enemy_display_name === unitName;
 }
+function findStageDrop(unitName: string, stage: Stage) {
+	if (unitName !== "Slime") {
+		const crystalName = `${unitName} Crystal`;
+		const drop = stage.drops.find(drop => drop.name === crystalName);
+		if (drop) {
+			// debug(`${unitName} + ${crystalName} > ${stage.stage_area_group_name} ${stage.stage_area_name} ${stage.stage_display_name}`);
+			return drop;
+		}
+	}
+	return undefined;
+}
+/*
+		"drops": [
+			{ "name": "Gold", "dropPercent": 100, "quantity": 26 },
+			{ "name": "Experience", "dropPercent": 100, "quantity": 752 },
+			{ "name": "True DQ V Estark Key", "dropPercent": 10, "quantity": 1 },
+			{ "name": "True DQ V Banner", "dropPercent": 25, "quantity": 34 },
+			{ "name": "True DQ V Banner", "dropPercent": 25, "quantity": 37 },
+			{ "name": "True DQ V Banner", "dropPercent": 25, "quantity": 41 },
+			{ "name": "True DQ V Banner", "dropPercent": 25, "quantity": 48 },
+			{ "name": "Pankraz Gotha Crystal", "dropPercent": 10, "quantity": 1 },
+			{ "name": "Gems", "dropPercent": 100, "quantity": 50 },
+			{ "name": "True DQ V Banner", "dropPercent": 100, "quantity": 40 }
+		]
+*/
 
 export function hasFarmables(unitName: string, farmables: Farmable[]): boolean {
-	return farmables.find(farmable => match(unitName, farmable)) !== undefined;
+	return farmables.find(farmable => matchFarmable(unitName, farmable)) !== undefined;
+}
+export function hasStages(unitName: string, stages: Stage[]): boolean {
+	return stages.find(stage => findStageDrop(unitName, stage)) !== undefined;
 }
 
-export function findAndFormatFarmables(unitName: string, farmables: Farmable[]): string[] {
-	const unitFarmables = farmables.filter(farmable => match(unitName, farmable));
+type Generic = {
+	group: string;
+	area: string;
+	name: string;
+	stamina: number;
+	dropPercent: number;
+	staminaPerDrop: number;
+	isBest: boolean;
+};
 
-	unitFarmables.forEach((a, index, array) => {
+function convertFarmable(farmable: Farmable): Generic {
+	return {
+		group: farmable.stage_area_group_name,
+		area: farmable.stage_area_name,
+		name: farmable.stage_display_name,
+		stamina: farmable.stage_stamina_cost,
+		dropPercent: farmable.scout_probability,
+		staminaPerDrop: farmable.stamina_per_drop,
+		isBest: farmable.is_best_drop_rate
+	};
+}
+
+function convertStage({ stage, drop }: { stage:Stage; drop:StageDrop }): Generic {
+	return {
+		group: stage.stage_area_group_name,
+		area: stage.stage_area_name,
+		name: stage.stage_display_name,
+		stamina: stage.stage_stamina_cost,
+		dropPercent: drop.dropPercent,
+		staminaPerDrop: stage.stage_stamina_cost / drop.dropPercent,
+		isBest: false
+	};
+}
+
+export function findAndFormatFarmables(unitName: string, farmables: Farmable[], stages: Stage[]): string[] {
+	const unitFarmables = farmables.filter(farmable => matchFarmable(unitName, farmable));
+	const unitStages = stages.map(stage => ({ stage, drop:findStageDrop(unitName, stage)! })).filter(pair => pair.drop);
+	const generics = unitFarmables.map(convertFarmable).concat(unitStages.map(convertStage));
+	const bestStaminaPerDrop = generics.reduce((best, { staminaPerDrop }) => Math.min(best, staminaPerDrop), 9999);
+	generics.forEach(generic => generic.isBest = generic.staminaPerDrop === bestStaminaPerDrop);
+
+	generics.forEach((a, index, array) => {
 		const b = array[index + 1];
 		const c = array[index + 2];
 		if (b && c) {
-			const aName = formatStageName([ a.stage_area_group_name, a.stage_area_name, a.stage_display_name ]);
-			const bName = formatStageName([ b.stage_area_group_name, b.stage_area_name, b.stage_display_name ]);
-			const cName = formatStageName([ c.stage_area_group_name, c.stage_area_name, c.stage_display_name ]);
+			const aName = formatStageName([ a.group, a.area, a.name ]);
+			const bName = formatStageName([ b.group, b.area, b.name ]);
+			const cName = formatStageName([ c.group, c.area, c.name ]);
 			if (aName === bName && bName === cName) {
 				const sorted = [a, b, c].sort((_a, _b) => {
-					if (_a.stage_stamina_cost === _b.stage_stamina_cost) {
+					if (_a.stamina === _b.stamina) {
 						return 0;
 					}
-					return _a.stage_stamina_cost < _b.stage_stamina_cost ? -1 : 1;
+					return _a.stamina < _b.stamina ? -1 : 1;
 				});
-				sorted[0].stage_area_name = sorted[0].stage_area_name + ": Normal";
-				sorted[1].stage_area_name = sorted[1].stage_area_name + ": Hard";
-				sorted[2].stage_area_name = sorted[2].stage_area_name + ": Very Hard";
+				sorted[0].area = sorted[0].area + ": Normal";
+				sorted[1].area = sorted[1].area + ": Hard";
+				sorted[2].area = sorted[2].area + ": Very Hard";
 			}
 		}
 	});
 
-	unitFarmables.sort((a, b) => {
-		if (a.is_best_drop_rate !== b.is_best_drop_rate) {
-			return a.is_best_drop_rate ? -1 : 1;
+	generics.sort((a, b) => {
+		if (a.isBest !== b.isBest) {
+			return a.isBest ? -1 : 1;
 		}
-		if (a.stamina_per_drop !== b.stamina_per_drop) {
-			return a.stamina_per_drop < b.stamina_per_drop ? -1 : 1;
+		if (a.staminaPerDrop !== b.staminaPerDrop) {
+			return a.staminaPerDrop < b.staminaPerDrop ? -1 : 1;
 		}
-		if (a.stamina_per_drop !== b.stamina_per_drop) {
-			return a.stamina_per_drop < b.stamina_per_drop ? -1 : 1;
+		if (a.dropPercent !== b.dropPercent) {
+			return a.dropPercent < b.dropPercent ? 1 : -1;
 		}
-		if (a.scout_probability !== b.scout_probability) {
-			return a.scout_probability < b.scout_probability ? 1 : -1;
-		}
-		return a.stage_display_name.toLowerCase() < b.stage_display_name.toLowerCase() ? -1 : 1;
+		return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
 	});
 
-	return unitFarmables.map(({ stage_area_name, stage_area_group_name, stage_display_name, scout_probability, stamina_per_drop, is_best_drop_rate }) => {
-		const [name, difficulty] = formatStageName([ stage_area_group_name, stage_area_name, stage_display_name ], true);
-		const tada = is_best_drop_rate ? ":tada:" : "";
+	return generics.map(({ group, area, name, dropPercent, staminaPerDrop, isBest }) => {
+		const [formattedName, difficulty] = formatStageName([ group, area, name ], true);
+		const tada = isBest ? ":tada:" : "";
 		const diff = difficulty ? `(${difficulty})` : ``;
-		const stats = `${diff} Drop Rate: ${round(scout_probability, 1)}%; Avg Stam Per Drop: ${round(stamina_per_drop, 1)} ${tada}`.trim();
-		return [name, `- ${stats}`];
+		const stats = `${diff} Drop Rate: ${round(dropPercent, 1)}%; Avg Stam Per Drop: ${round(staminaPerDrop, 1)} ${tada}`.trim();
+		return [formattedName, `- ${stats}`];
 	}).flat().reduce((out, line) => {
 		if (line.startsWith("-")) {
 			out.push(line);

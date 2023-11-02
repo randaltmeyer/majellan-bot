@@ -1,5 +1,5 @@
 import { Area } from "../../types.mjs";
-import { formatStageName } from "./formatStageName.mjs";
+import { formatStageName } from "../stages/formatStageName.mjs";
 
 function match(unitName:string, area: Area): boolean {
 	return area.area_category === 4
